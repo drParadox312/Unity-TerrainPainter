@@ -275,45 +275,31 @@ float AdjacentHeight(uint3 id, int p_left_right, int p_up_down)
 
 
 
+	if(id.x == 0  &&  p_left_right == -1)
+		_returnHeight = neighbor_terrain_heightMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	
+	
+	if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		_returnHeight = neighbor_terrain_heightMaps[uint2(id.x, 0)].y ;	
+
+	if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		_returnHeight = neighbor_terrain_heightMaps[uint2(0 , id.y)].z ;	
+
+	if(id.y == 0  &&  p_up_down == -1)
+		_returnHeight = neighbor_terrain_heightMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	
+
+
+
 	if(id.x == 0  &&  id.y == 0  &&  p_left_right == -1  && p_up_down == -1)
-		{ _returnHeight = cornerNeighborTerrainsHeights.w ;	}
+		_returnHeight = cornerNeighborTerrainsHeights.w ;	
 
-	else if(id.x == 0  &&  id.y == terrainHeightMapResolution -1  &&  p_left_right == -1  && p_up_down == 1)
-		{ _returnHeight = cornerNeighborTerrainsHeights.x ;	}
+	if(id.x == 0  &&  id.y == terrainHeightMapResolution -1  &&  p_left_right == -1  && p_up_down == 1)
+		_returnHeight = cornerNeighborTerrainsHeights.x ;	
 
-	else if(id.x == terrainHeightMapResolution -1 && id.y == terrainHeightMapResolution -1  &&  p_left_right == 1  && p_up_down == 1)
-		{ _returnHeight = cornerNeighborTerrainsHeights.y ;	}
+	if(id.x == terrainHeightMapResolution -1 && id.y == terrainHeightMapResolution -1  &&  p_left_right == 1  && p_up_down == 1)
+		_returnHeight = cornerNeighborTerrainsHeights.y ;	
 
-	else if(id.x == terrainHeightMapResolution -1  &&  id.y == 0  &&  p_left_right == 1  && p_up_down == -1)
-		{ _returnHeight = cornerNeighborTerrainsHeights.z ;	}
-
-	else if(id.x == 0  &&  p_left_right == -1)
-		{	if(hasNeighborTerrains.x == 1) 
-				{ _returnHeight = neighbor_terrain_heightMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	}
-			else
-				{ _returnHeight = 0; }
-		}
-
-	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
-		{	if(hasNeighborTerrains.y == 1) 
-				{ _returnHeight = neighbor_terrain_heightMaps[uint2(id.x, 0)].y ;	}
-			else
-				{ _returnHeight = 0; }
-		}
-
-	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
-		{	if(hasNeighborTerrains.z == 1) 
-				{ _returnHeight = neighbor_terrain_heightMaps[uint2(0 , id.y)].z ;	}
-			else
-				{ _returnHeight = 0; }
-		}
-
-	else if(id.y == 0  &&  p_up_down == -1)
-		{	if(hasNeighborTerrains.w == 1) 
-				{ _returnHeight = neighbor_terrain_heightMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	}
-			else
-				{ _returnHeight = 0; }
-		}
+	if(id.x == terrainHeightMapResolution -1  &&  id.y == 0  &&  p_left_right == 1  && p_up_down == -1)
+		_returnHeight = cornerNeighborTerrainsHeights.z ;	
 
 
 
@@ -336,7 +322,7 @@ float CalculateSlope(uint3 id)
 	float _left_to_right_height_difference	= AdjacentHeight(id, -1, 0)  -  AdjacentHeight(id, 1, 0) ;
 	float _down_to_up_height_difference		= AdjacentHeight(id, 0, -1)  -  AdjacentHeight(id, 0 , 1) ; 
 
-	_normal = float3( ((float)(terrainHeightMapResolution - 1)) * _left_to_right_height_difference ,     4.0,     ((float)(terrainHeightMapResolution - 1)) * _down_to_up_height_difference) ;
+	_normal = float3( ((float)(terrainHeightMapResolution - 0)) * _left_to_right_height_difference ,     4.0,     ((float)(terrainHeightMapResolution - 0)) * _down_to_up_height_difference) ;
 	_normal = normalize(_normal) ;
 
 	_slope = 1 - dot(float3(0.0 , 1.0 , 0.0), _normal) ;
@@ -388,32 +374,16 @@ float GetWaterMapValue(uint3 id, int p_left_right, int p_up_down)
 
 
 	if(id.x == 0  &&  p_left_right == -1)
-		{	if(hasNeighborTerrains.x == 1) 
-				{ _returnWater = neighbor_terrain_waterMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	}
-			else
-				{ _returnWater = 0; }	
-		}
+		_returnWater = neighbor_terrain_waterMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	
 
-	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
-		{	if(hasNeighborTerrains.y == 1) 
-				{ _returnWater = neighbor_terrain_waterMaps[uint2(id.x, 0)].y ;	}
-			else
-				{ _returnWater = 0; }	
-		}
+	if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		_returnWater = neighbor_terrain_waterMaps[uint2(id.x, 0)].y ;	
 
-	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
-		{	if(hasNeighborTerrains.z == 1) 
-				{ _returnWater = neighbor_terrain_waterMaps[uint2(0 , id.y)].z ;	}
-			else
-				{ _returnWater = 0; }	
-		}
+	if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		_returnWater = neighbor_terrain_waterMaps[uint2(0 , id.y)].z ;	
 
-	else if(id.y == 0  &&  p_up_down == -1)
-		{	if(hasNeighborTerrains.w == 1) 
-				{ _returnWater = neighbor_terrain_waterMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	}
-			else
-				{ _returnWater = 0; }	
-		}
+	if(id.y == 0  &&  p_up_down == -1)
+		_returnWater = neighbor_terrain_waterMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	
 
 
 	return _returnWater ;
@@ -442,32 +412,16 @@ float4 GetWaterOut_MapValue(uint3 id, int p_left_right, int p_up_down)
 
 
 	if(id.x == 0  &&  p_left_right == -1)
-		{	if(hasNeighborTerrains.x == 1) 
-				{ _returnWaterOut = waterOutMap_left[uint2(terrainHeightMapResolution -1 , id.y)] ;	}
-			else
-				{ _returnWaterOut = float4(0,0,0,0); }	
-		}
+		_returnWaterOut = waterOutMap_left[uint2(terrainHeightMapResolution -1 , id.y)] ;	
 
-	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
-		{	if(hasNeighborTerrains.y == 1) 
-				{ _returnWaterOut = waterOutMap_up[uint2(id.x, 0)] ;	}
-			else
-				{ _returnWaterOut = float4(0,0,0,0); }		
-		}
+	if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		_returnWaterOut = waterOutMap_up[uint2(id.x, 0)] ;	
 
-	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
-		{	if(hasNeighborTerrains.z == 1) 
-				{ _returnWaterOut = waterOutMap_right[uint2(0 , id.y)] ;	}
-			else
-				{ _returnWaterOut = float4(0,0,0,0); }		
-		}
+	if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		_returnWaterOut = waterOutMap_right[uint2(0 , id.y)] ;	
 
-	else if(id.y == 0  &&  p_up_down == -1)
-		{	if(hasNeighborTerrains.w == 1) 
-				{ _returnWaterOut = waterOutMap_down[uint2(id.x, terrainHeightMapResolution -1)] ;	}
-			else
-				{ _returnWaterOut = float4(0,0,0,0); }		
-		}
+	if(id.y == 0  &&  p_up_down == -1)
+		_returnWaterOut = waterOutMap_down[uint2(id.x, terrainHeightMapResolution -1)] ;	
 
 
 

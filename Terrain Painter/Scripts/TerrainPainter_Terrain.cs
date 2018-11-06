@@ -123,7 +123,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
     }
 
 
-
+/*
     public void UpdateProperties()
     {
         renderTexture_unity_heightMap.Create();
@@ -143,7 +143,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
             splatMapsArray[i].Create();
         }
     }
-
+*/
 
 
     void SetUpTerrainParameters()
@@ -283,7 +283,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
-    RenderTexture CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(RenderTexture p_renderTexture)
+    RenderTexture CopyRenderTexture(RenderTexture p_renderTexture)
     {
         if (p_renderTexture)
         {
@@ -414,27 +414,27 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
         if (terrain.leftNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_left, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_left, CopyRenderTexture(terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
         else
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_left, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(null));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_left, CopyRenderTexture(null));
 
 
         if (terrain.rightNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_right, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_right, CopyRenderTexture(terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
         else
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_right, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(null));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_right, CopyRenderTexture(null));
 
 
         if (terrain.bottomNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_down, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_down, CopyRenderTexture(terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
         else
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_down, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(null));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_down, CopyRenderTexture(null));
 
 
         if (terrain.topNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_up, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_up, CopyRenderTexture(terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_Maps));
         else
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_up, CopyTerrainHeightmapToRenderTextureWithEnableRandomWrite(null));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.unity_heightMap_up, CopyRenderTexture(null));
 
 
 
