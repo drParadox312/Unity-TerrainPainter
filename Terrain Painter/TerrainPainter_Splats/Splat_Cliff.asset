@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2805e08a99e47524aa279caf6481c4d9, type: 3}
+  m_Name: Splat_Cliff
+  m_EditorClassIdentifier: 
+  name: Cliff
+  terrainLayer: {fileID: 8574412962073106934, guid: 6bb0ad2ce1440c246a899093f0414b71,
+    type: 2}
+  splatType: 0
+  paintMethod: 0
+  paintRules:
+    flowMapWeight: 0
+    convexityMapWeight: 0
+    concavityMapWeight: 0
+    maxHeight: 1500
+    minHeight: 0
+    minHeightBias: 250
+    maxSlope: 90
+    minSlope: 50
+    minSlopeBias: 15
+    biasFrequency: 0.01
+  useFlowMapMask: 0
+  useConvexityMapMask: 0
+  useConcavitiyMapMask: 0

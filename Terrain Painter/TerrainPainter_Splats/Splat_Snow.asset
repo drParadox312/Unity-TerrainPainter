@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2805e08a99e47524aa279caf6481c4d9, type: 3}
+  m_Name: Splat_Snow
+  m_EditorClassIdentifier: 
+  name: Snow
+  terrainLayer: {fileID: 8574412962073106934, guid: ae874ec0db78fac478e5f79197d94c33,
+    type: 2}
+  splatType: 2
+  paintMethod: 0
+  paintRules:
+    flowMapWeight: 0.8
+    convexityMapWeight: 0.9
+    concavityMapWeight: 0.9
+    maxHeight: 0
+    minHeight: 0
+    minHeightBias: 0
+    maxSlope: 0
+    minSlope: 0
+    minSlopeBias: 0
+    biasFrequency: 8
+  useFlowMapMask: 1
+  useConvexityMapMask: 0
+  useConcavitiyMapMask: 0

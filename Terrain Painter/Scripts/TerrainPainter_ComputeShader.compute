@@ -1,0 +1,916 @@
+﻿
+
+
+
+
+
+
+
+#pragma kernel Generate_Height_Map 
+#pragma kernel Generate_NeighborTerrain_Height_Map 
+#pragma kernel Generate_Slope_Map
+#pragma kernel Generate_SnowWeight_Map
+
+#pragma kernel FlowMap_AddWater
+#pragma kernel FlowMap_GenerateNeighborTerrainWaterMaps 
+#pragma kernel FlowMap_CalculateWaterOut
+#pragma kernel FlowMap_MoveWater
+#pragma kernel FlowMap_Generate
+
+#pragma kernel CurvatureMap_Generate 
+
+#pragma kernel Generate_SplatMap
+#pragma kernel Normalize_SplatMap
+
+
+
+
+
+
+
+
+
+struct SplatPaintRules
+{
+    float flowMapWeight;
+    float convexityMapWeight;
+    float concavityMapWeight;
+    float maxHeight, minHeight, minHeightBias;
+    float maxSlope, minSlope, minSlopeBias;
+    float biasFrequency;
+};
+
+
+
+
+
+
+
+
+
+
+float4 terrainSize ;
+float4 terrainPosition ;
+int terrainHeightMapResolution  ;
+int alphaMapResolution  ;
+int splatRuleBufferIndex ;
+int splatType ;
+int paintMethod ;
+float snowAmount ;
+int flowMapIteration ;
+
+
+float4 hasNeighborTerrains ;
+float4 cornerNeighborTerrainsHeights ; 
+
+
+
+
+
+
+
+
+
+
+RWStructuredBuffer<SplatPaintRules> splatPaintRulesBuffer ;
+RWStructuredBuffer<float> splat_Map_Total_Weight_Buffer ;
+
+
+
+RWTexture2D<float> unity_heightMap ;
+RWTexture2D<float4> unity_heightMap_left ;
+RWTexture2D<float4> unity_heightMap_right ;
+RWTexture2D<float4> unity_heightMap_down ;
+RWTexture2D<float4> unity_heightMap_up ;
+
+
+
+RWTexture2D<float4> height_slope_snowWeight_Maps ;
+RWTexture2D<float4> neighbor_terrain_heightMaps ;
+RWTexture2D<float4> normal_Map ;
+RWTexture2D<float4> convexity_concavitiy_flow_Maps ;
+
+
+
+RWTexture2D<float4> waterMap_left;
+RWTexture2D<float4> waterMap_up;
+RWTexture2D<float4> waterMap_right;
+RWTexture2D<float4> waterMap_down;
+RWTexture2D<float4> neighbor_terrain_waterMaps ;
+
+
+
+RWTexture2D<float4> waterOutMap_this;
+RWTexture2D<float4> waterOutMap_left;
+RWTexture2D<float4> waterOutMap_up;
+RWTexture2D<float4> waterOutMap_right;
+RWTexture2D<float4> waterOutMap_down;
+
+
+
+
+RWTexture2D<float4> splatMapsArray ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 3D noise
+// source : https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl
+
+
+float3 mod289(float3 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+float4 mod289(float4 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+float4 permute(float4 x) {
+     return mod289(((x*34.0)+1.0)*x);
+}
+
+float4 taylorInvSqrt(float4 r)
+{
+  return 1.79284291400159 - 0.85373472095314 * r;
+}
+
+float snoise(float3 v)
+  { 
+  const float2  C = float2(1.0/6.0, 1.0/3.0) ;
+  const float4  D = float4(0.0, 0.5, 1.0, 2.0);
+
+// First corner
+  float3 i  = floor(v + dot(v, C.yyy) );
+  float3 x0 =   v - i + dot(i, C.xxx) ;
+
+// Other corners
+  float3 g = 0; // step(x0.yzx, x0.xyz);
+    if(length(x0.yzx) > 0)
+	g = 0;
+	else
+	g = 1;
+
+  float3 l = 1.0 - g;
+  float3 i1 = min( g.xyz, l.zxy );
+  float3 i2 = max( g.xyz, l.zxy );
+
+  //   x0 = x0 - 0.0 + 0.0 * C.xxx;
+  //   x1 = x0 - i1  + 1.0 * C.xxx;
+  //   x2 = x0 - i2  + 2.0 * C.xxx;
+  //   x3 = x0 - 1.0 + 3.0 * C.xxx;
+  float3 x1 = x0 - i1 + C.xxx;
+  float3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
+  float3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
+
+// Permutations
+  i = mod289(i); 
+  float4 p = permute( permute( permute( 
+             i.z + float4(0.0, i1.z, i2.z, 1.0 ))
+           + i.y + float4(0.0, i1.y, i2.y, 1.0 )) 
+           + i.x + float4(0.0, i1.x, i2.x, 1.0 ));
+
+// Gradients: 7x7 points over a square, mapped onto an octahedron.
+// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+  float n_ = 0.142857142857; // 1.0/7.0
+  float3  ns = n_ * D.wyz - D.xzx;
+
+  float4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)
+
+  float4 x_ = floor(j * ns.z);
+  float4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+
+  float4 x = x_ *ns.x + ns.yyyy;
+  float4 y = y_ *ns.x + ns.yyyy;
+  float4 h = 1.0 - abs(x) - abs(y);
+
+  float4 b0 = float4( x.xy, y.xy );
+  float4 b1 = float4( x.zw, y.zw );
+
+  //float4 s0 = float4(lessThan(b0,0.0))*2.0 - 1.0;
+  //float4 s1 = float4(lessThan(b1,0.0))*2.0 - 1.0;
+  float4 s0 = floor(b0)*2.0 + 1.0;
+  float4 s1 = floor(b1)*2.0 + 1.0;
+  float4 sh = 0 ; // -step(h, float4(0.0));
+  if(length(h) > 0)
+	sh = 0;
+	else
+	sh = -1;
+
+  float4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+  float4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+  float3 p0 = float3(a0.xy,h.x);
+  float3 p1 = float3(a0.zw,h.y);
+  float3 p2 = float3(a1.xy,h.z);
+  float3 p3 = float3(a1.zw,h.w);
+
+//Normalise gradients
+  float4 norm = taylorInvSqrt(float4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  p0 *= norm.x;
+  p1 *= norm.y;
+  p2 *= norm.z;
+  p3 *= norm.w;
+
+// Mix final noise value
+  float4 m = max(0.6 - float4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot( m*m, float4( dot(p0,x0), dot(p1,x1), 
+                                dot(p2,x2), dot(p3,x3) ) );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+float PerlinNoiseValue(uint3 id, float p_frequency)
+{
+
+	float _pos_x =   terrainPosition.x + (  terrainSize.x * (  (float)id.x/ ( (float)terrainHeightMapResolution - 1) )  ) ;
+	float _pos_z =   terrainPosition.z + (  terrainSize.z * (  (float)id.y/ ( (float)terrainHeightMapResolution - 1) )  ) ;
+	float _pos_y =	 terrainPosition.y + (  terrainSize.y * height_slope_snowWeight_Maps[id.xy].x  ) ;
+
+	float3 _vector = float3(_pos_x, _pos_y, _pos_z) ;
+
+	return saturate(snoise(_vector * 0.0015 * p_frequency));
+}
+
+
+
+
+
+
+float AdjacentHeight(uint3 id, int p_left_right, int p_up_down)
+{
+	float _returnHeight = 0;
+
+	int _index_X = 0 ;
+	int _index_Y = 0 ;
+
+	_index_X = clamp(id.x + p_left_right,   0, terrainHeightMapResolution -1) ;
+	_index_Y = clamp(id.y + p_up_down,   0, terrainHeightMapResolution -1) ;
+	_returnHeight = height_slope_snowWeight_Maps[uint2(_index_X , _index_Y)].x ; 
+
+
+
+	if(id.x == 0  &&  id.y == 0  &&  p_left_right == -1  && p_up_down == -1)
+		{ _returnHeight = cornerNeighborTerrainsHeights.w ;	}
+
+	else if(id.x == 0  &&  id.y == terrainHeightMapResolution -1  &&  p_left_right == -1  && p_up_down == 1)
+		{ _returnHeight = cornerNeighborTerrainsHeights.x ;	}
+
+	else if(id.x == terrainHeightMapResolution -1 && id.y == terrainHeightMapResolution -1  &&  p_left_right == 1  && p_up_down == 1)
+		{ _returnHeight = cornerNeighborTerrainsHeights.y ;	}
+
+	else if(id.x == terrainHeightMapResolution -1  &&  id.y == 0  &&  p_left_right == 1  && p_up_down == -1)
+		{ _returnHeight = cornerNeighborTerrainsHeights.z ;	}
+
+	else if(id.x == 0  &&  p_left_right == -1)
+		{	if(hasNeighborTerrains.x == 1) 
+				{ _returnHeight = neighbor_terrain_heightMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	}
+			else
+				{ _returnHeight = 0; }
+		}
+
+	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		{	if(hasNeighborTerrains.y == 1) 
+				{ _returnHeight = neighbor_terrain_heightMaps[uint2(id.x, 0)].y ;	}
+			else
+				{ _returnHeight = 0; }
+		}
+
+	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		{	if(hasNeighborTerrains.z == 1) 
+				{ _returnHeight = neighbor_terrain_heightMaps[uint2(0 , id.y)].z ;	}
+			else
+				{ _returnHeight = 0; }
+		}
+
+	else if(id.y == 0  &&  p_up_down == -1)
+		{	if(hasNeighborTerrains.w == 1) 
+				{ _returnHeight = neighbor_terrain_heightMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	}
+			else
+				{ _returnHeight = 0; }
+		}
+
+
+
+	return _returnHeight;
+}
+
+
+
+
+
+
+
+
+float CalculateSlope(uint3 id)
+{
+	float _slope = 0;
+
+	float3 _normal = float3(0,0,0);
+
+	float _left_to_right_height_difference	= AdjacentHeight(id, -1, 0)  -  AdjacentHeight(id, 1, 0) ;
+	float _down_to_up_height_difference		= AdjacentHeight(id, 0, -1)  -  AdjacentHeight(id, 0 , 1) ; 
+
+	_normal = float3( ((float)(terrainHeightMapResolution - 1)) * _left_to_right_height_difference ,     4.0,     ((float)(terrainHeightMapResolution - 1)) * _down_to_up_height_difference) ;
+	_normal = normalize(_normal) ;
+
+	_slope = 1 - dot(float3(0.0 , 1.0 , 0.0), _normal) ;
+
+	return saturate(_slope) ;
+}
+
+
+
+
+
+
+
+
+
+
+float CalculateSnowWeight(uint3 id)
+{
+	float _snowWeight = 0;
+
+//	_snowWeight = 1- (height_slope_snowWeight_Maps[id.xy].x * (1 - height_slope_snowWeight_Maps[id.xy].y)) ;
+//	_snowWeight = 2*_snowWeight -1 ;
+
+	_snowWeight = 1 - (height_slope_snowWeight_Maps[id.xy].x * (1 - height_slope_snowWeight_Maps[id.xy].y)) ;
+
+	return saturate(_snowWeight) ;
+}
+
+
+
+
+
+
+
+
+
+
+
+float GetWaterMapValue(uint3 id, int p_left_right, int p_up_down)
+{
+	float _returnWater = 0;
+
+	int _index_X = 0 ;
+	int _index_Y = 0 ;
+
+	_index_X = clamp(id.x + p_left_right,   0, terrainHeightMapResolution -1) ;
+	_index_Y = clamp(id.y + p_up_down,   0, terrainHeightMapResolution -1) ;
+	_returnWater = height_slope_snowWeight_Maps[uint2(_index_X , _index_Y)].w ; 
+
+
+	if(id.x == 0  &&  p_left_right == -1)
+		{	if(hasNeighborTerrains.x == 1) 
+				{ _returnWater = neighbor_terrain_waterMaps[uint2(terrainHeightMapResolution -1 , id.y)].x ;	}
+			else
+				{ _returnWater = 0; }	
+		}
+
+	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		{	if(hasNeighborTerrains.y == 1) 
+				{ _returnWater = neighbor_terrain_waterMaps[uint2(id.x, 0)].y ;	}
+			else
+				{ _returnWater = 0; }	
+		}
+
+	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		{	if(hasNeighborTerrains.z == 1) 
+				{ _returnWater = neighbor_terrain_waterMaps[uint2(0 , id.y)].z ;	}
+			else
+				{ _returnWater = 0; }	
+		}
+
+	else if(id.y == 0  &&  p_up_down == -1)
+		{	if(hasNeighborTerrains.w == 1) 
+				{ _returnWater = neighbor_terrain_waterMaps[uint2(id.x, terrainHeightMapResolution -1)].w ;	}
+			else
+				{ _returnWater = 0; }	
+		}
+
+
+	return _returnWater ;
+}
+
+
+
+
+
+
+
+
+
+
+float4 GetWaterOut_MapValue(uint3 id, int p_left_right, int p_up_down)
+{
+	float4 _returnWaterOut = float4(0,0,0,0);
+
+	int _index_X = 0 ;
+	int _index_Y = 0 ;
+
+	_index_X = clamp(id.x + p_left_right,   0, terrainHeightMapResolution -1) ;
+	_index_Y = clamp(id.y + p_up_down,   0, terrainHeightMapResolution -1) ;
+	_returnWaterOut = waterOutMap_this[uint2(_index_X , _index_Y)] ; 
+	
+
+
+	if(id.x == 0  &&  p_left_right == -1)
+		{	if(hasNeighborTerrains.x == 1) 
+				{ _returnWaterOut = waterOutMap_left[uint2(terrainHeightMapResolution -1 , id.y)] ;	}
+			else
+				{ _returnWaterOut = float4(0,0,0,0); }	
+		}
+
+	else if(id.y == terrainHeightMapResolution -1  &&  p_up_down == 1)
+		{	if(hasNeighborTerrains.y == 1) 
+				{ _returnWaterOut = waterOutMap_up[uint2(id.x, 0)] ;	}
+			else
+				{ _returnWaterOut = float4(0,0,0,0); }		
+		}
+
+	else if(id.x == terrainHeightMapResolution -1  &&  p_left_right == 1)
+		{	if(hasNeighborTerrains.z == 1) 
+				{ _returnWaterOut = waterOutMap_right[uint2(0 , id.y)] ;	}
+			else
+				{ _returnWaterOut = float4(0,0,0,0); }		
+		}
+
+	else if(id.y == 0  &&  p_up_down == -1)
+		{	if(hasNeighborTerrains.w == 1) 
+				{ _returnWaterOut = waterOutMap_down[uint2(id.x, terrainHeightMapResolution -1)] ;	}
+			else
+				{ _returnWaterOut = float4(0,0,0,0); }		
+		}
+
+
+
+	return _returnWaterOut ;
+}
+
+
+
+
+
+
+
+
+
+
+float CalcualteWeight(uint3 id, int p_splatRuleBufferIndex, float p_totalWeight)
+{
+	float _weight = 0 ;
+	
+	if(splatType == 0)
+	{
+
+		float _height_Weight = 0;
+		float _slope_Weight = 0;
+
+		float _height = height_slope_snowWeight_Maps[id.xy].x * terrainSize.y ;
+		float _slope = height_slope_snowWeight_Maps[id.xy].y * 90 ;
+	
+
+
+		float _heightBias = splatPaintRulesBuffer[p_splatRuleBufferIndex].minHeightBias * PerlinNoiseValue(id, splatPaintRulesBuffer[p_splatRuleBufferIndex].biasFrequency);
+
+		if(_height >= splatPaintRulesBuffer[p_splatRuleBufferIndex].minHeight - _heightBias  &&  _height <= splatPaintRulesBuffer[p_splatRuleBufferIndex].maxHeight)
+		{
+			_height_Weight = 1 ;
+
+			if(_height < splatPaintRulesBuffer[p_splatRuleBufferIndex].minHeight)
+			{
+				_height_Weight = PerlinNoiseValue(id, splatPaintRulesBuffer[p_splatRuleBufferIndex].biasFrequency) *  (_heightBias/(splatPaintRulesBuffer[p_splatRuleBufferIndex].minHeight - _height)) ;
+			}
+		}
+
+
+
+
+		float _slopeBias = splatPaintRulesBuffer[p_splatRuleBufferIndex].minSlopeBias * PerlinNoiseValue(id, splatPaintRulesBuffer[p_splatRuleBufferIndex].biasFrequency);
+
+		if(_slope >= splatPaintRulesBuffer[p_splatRuleBufferIndex].minSlope - _slopeBias  &&  _slope <= splatPaintRulesBuffer[p_splatRuleBufferIndex].maxSlope)
+		{
+			_slope_Weight = 1 ;
+
+			if(_slope < splatPaintRulesBuffer[p_splatRuleBufferIndex].minSlope)
+			{
+				_slope_Weight = PerlinNoiseValue(id, splatPaintRulesBuffer[p_splatRuleBufferIndex].biasFrequency)  *  (_slopeBias/(splatPaintRulesBuffer[p_splatRuleBufferIndex].minSlope - _slope)) ;
+			}
+		}
+
+		_weight = saturate(_height_Weight * _slope_Weight)  ;
+	}
+
+	else if(splatType == 1)
+	{
+		_weight = saturate(1 - p_totalWeight) ;
+	}
+
+	else if(splatType == 2)
+	{
+		if(sqrt(snowAmount) >= height_slope_snowWeight_Maps[id.xy].z - (PerlinNoiseValue(id, splatPaintRulesBuffer[p_splatRuleBufferIndex].biasFrequency) * 0.05))
+		{
+			_weight = 1 ;
+		}
+	}
+
+
+
+
+
+
+	// flow, convexity, concavity  mask maps
+	
+	if(splatPaintRulesBuffer[p_splatRuleBufferIndex].flowMapWeight >= 0)
+	{
+		float _flowMapWeight = 1 - sqrt(splatPaintRulesBuffer[p_splatRuleBufferIndex].flowMapWeight) ;
+
+		if(_flowMapWeight >= convexity_concavitiy_flow_Maps[id.xy].z)
+		{
+			_weight = 0 ;
+		}
+	}
+
+
+	if(splatPaintRulesBuffer[p_splatRuleBufferIndex].convexityMapWeight >= 0)
+	{
+		float _convexityMapWeight = 1 - sqrt(splatPaintRulesBuffer[p_splatRuleBufferIndex].convexityMapWeight) ;
+
+		if(_convexityMapWeight >= convexity_concavitiy_flow_Maps[id.xy].x)
+		{
+			_weight = 0 ;
+		}
+	}
+
+
+	if(splatPaintRulesBuffer[p_splatRuleBufferIndex].concavityMapWeight >= 0)
+	{
+		float _concavityMapWeight = 1- sqrt(splatPaintRulesBuffer[p_splatRuleBufferIndex].concavityMapWeight) ;
+
+		if(_concavityMapWeight >= convexity_concavitiy_flow_Maps[id.xy].y)
+		{
+			_weight = 0 ;
+		}
+	}
+	
+
+
+	
+	if(paintMethod == 0 && splatType != 1)
+		_weight = saturate(_weight * (1 - p_totalWeight)) ;
+
+
+
+
+	return _weight ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////   kernels    ////////////////////
+
+
+
+
+
+[numthreads(8,8,1)]
+void Generate_Height_Map (uint3 id : SV_DispatchThreadID)
+{
+	// Multiplied with 2. Because Unity's Terrain.TerrainData.heightmap returns halved values of heights ;
+	float _height = 2 * unity_heightMap[id.xy] ;	
+	height_slope_snowWeight_Maps[id.xy] = float4( _height,    height_slope_snowWeight_Maps[id.xy].yzw ) ;
+}
+
+
+[numthreads(8,8,1)]
+void Generate_NeighborTerrain_Height_Map (uint3 id : SV_DispatchThreadID)
+{
+	neighbor_terrain_heightMaps[id.xy] = float4(  unity_heightMap_left[id.xy].x , unity_heightMap_up[id.xy].x , unity_heightMap_right[id.xy].x , unity_heightMap_down[id.xy].x );
+}
+
+
+[numthreads(8,8,1)]
+void Generate_Slope_Map (uint3 id : SV_DispatchThreadID)
+{
+	float _slope = CalculateSlope(id) ;
+	height_slope_snowWeight_Maps[id.xy] = float4( height_slope_snowWeight_Maps[id.xy].x,  _slope, height_slope_snowWeight_Maps[id.xy].zw) ;
+}
+
+
+[numthreads(8,8,1)]
+void Generate_SnowWeight_Map (uint3 id : SV_DispatchThreadID)
+{
+	float _snowWeight = CalculateSnowWeight(id) ;
+	height_slope_snowWeight_Maps[id.xy] = float4( height_slope_snowWeight_Maps[id.xy].xy,  _snowWeight,     height_slope_snowWeight_Maps[id.xy].w) ;
+}
+
+
+
+
+
+
+
+
+
+
+
+// source : https://github.com/Scrawk/Terrain-Topology-Algorithms 
+
+
+[numthreads(8,8,1)]
+void FlowMap_AddWater (uint3 id : SV_DispatchThreadID)
+{
+	height_slope_snowWeight_Maps[id.xy] = float4(height_slope_snowWeight_Maps[id.xy].xyz,  (1 / terrainSize.y)) ;
+}
+
+
+
+[numthreads(8,8,1)]
+void FlowMap_GenerateNeighborTerrainWaterMaps (uint3 id : SV_DispatchThreadID)
+{
+	neighbor_terrain_waterMaps[id.xy] = float4( waterMap_left[id.xy].w  ,  waterMap_up[id.xy].w  ,  waterMap_right[id.xy].w  ,   waterMap_down[id.xy].w  ) ;
+}
+
+
+
+[numthreads(8,8,1)]
+void FlowMap_CalculateWaterOut (uint3 id : SV_DispatchThreadID)
+{
+	float _water_Height	 =  GetWaterMapValue(id, 0, 0) ;
+
+	if(_water_Height > 0)
+	{
+		float _water_Height_left	= GetWaterMapValue(id, -1,  0) ;
+		float _water_Height_right	= GetWaterMapValue(id,  1,  0) ;
+		float _water_Height_down	= GetWaterMapValue(id,  0, -1) ;
+		float _water_Height_up		= GetWaterMapValue(id,  0,  1) ;
+		
+
+		float _terrain_Height			= AdjacentHeight(id,   0	,   0);
+		float _terrain_Height_left		= AdjacentHeight(id,  -1	,   0);
+		float _terrain_Height_right		= AdjacentHeight(id,   1	,   0);
+		float _terrain_Height_down		= AdjacentHeight(id,   0	,  -1);
+		float _terrain_Height_up		= AdjacentHeight(id,   0	,   1);
+
+
+
+		float _difference_left	= (_water_Height + _terrain_Height)  -  (_water_Height_left + _terrain_Height_left) ;
+		float _difference_right	= (_water_Height + _terrain_Height)  -  (_water_Height_right + _terrain_Height_right) ;
+		float _difference_down	= (_water_Height + _terrain_Height)  -  (_water_Height_down + _terrain_Height_down) ;
+		float _difference_up	= (_water_Height + _terrain_Height)  -  (_water_Height_up + _terrain_Height_up) ;
+
+
+
+		float _flow_left		= max(0, GetWaterOut_MapValue(id, -1,  0).x + _difference_left) ;
+		float _flow_right		= max(0, GetWaterOut_MapValue(id,  1,  0).z + _difference_right) ;
+		float _flow_down		= max(0, GetWaterOut_MapValue(id,  0, -1).w + _difference_down) ;
+		float _flow_up			= max(0, GetWaterOut_MapValue(id,  0,  1).y + _difference_up) ;
+
+
+		float _total_Flow = (_flow_left + _flow_right + _flow_down + _flow_up) * 0.2 ;
+
+		if(_total_Flow > 0)
+		{
+			float _flow_rate = saturate(_water_Height / _total_Flow)  ;
+
+			_flow_left	*= _flow_rate ;
+			_flow_right *= _flow_rate ;
+			_flow_down	*= _flow_rate ;
+			_flow_up	*= _flow_rate ;
+		}
+		else
+		{
+			_flow_left	= 0 ;
+			_flow_right = 0 ;
+			_flow_down	= 0 ;
+			_flow_up	= 0 ;
+		}
+
+		waterOutMap_this[id.xy] = float4(_flow_left , _flow_up , _flow_right , _flow_down) ;
+	}
+	
+	else
+	{
+		waterOutMap_this[id.xy] = float4(0,0,0,0) ;
+	}
+
+}
+
+
+
+
+[numthreads(8,8,1)]
+void FlowMap_MoveWater (uint3 id : SV_DispatchThreadID)
+{
+
+	float _waterIn = GetWaterOut_MapValue(id, -1, 0).z + GetWaterOut_MapValue(id, 1, 0).x + GetWaterOut_MapValue(id, 0, -1).y + GetWaterOut_MapValue(id, 0 ,1).w ;
+
+	float _waterOut = GetWaterOut_MapValue(id, 0, 0).x + GetWaterOut_MapValue(id, 0, 0).y + GetWaterOut_MapValue(id, 0, 0).z + GetWaterOut_MapValue(id, 0, 0).w ;
+
+	float _finalWaterAmount = GetWaterMapValue(id, 0, 0) + (_waterIn - _waterOut) * 0.2 ;
+
+	if(_finalWaterAmount < 0) {_finalWaterAmount = 0;}
+
+	height_slope_snowWeight_Maps[id.xy] =  float4(height_slope_snowWeight_Maps[id.xy].xyz,  _finalWaterAmount) ;
+
+}
+
+
+
+
+
+[numthreads(8,8,1)]
+void FlowMap_Generate (uint3 id : SV_DispatchThreadID)
+{
+
+	float _flow_left = 0;
+	float _flow_right = 0;
+	float _flow_down = 0;
+	float _flow_up = 0;
+
+
+
+	_flow_left = GetWaterOut_MapValue(id, -1, 0).z - GetWaterOut_MapValue(id, 0, 0).x ;
+	_flow_right = GetWaterOut_MapValue(id, 0, 0).z - GetWaterOut_MapValue(id, 1, 0).x ;
+	_flow_down = GetWaterOut_MapValue(id, 0, 0).w - GetWaterOut_MapValue(id, 0 ,-1).y ;
+	_flow_up = GetWaterOut_MapValue(id, 0 ,1).w - GetWaterOut_MapValue(id, 0, 0).y ;
+
+
+
+	float _speed_X = (_flow_left + _flow_right) * 0.5 ;
+	float _speed_Y = (_flow_down + _flow_up) * 0.5 ;
+
+	float _multiplier =  (1) / ( ( (1 / terrainSize.y) * (float)flowMapIteration * 5 ) + 0.000001);
+	float _water_speed = _multiplier * sqrt(_speed_X *_speed_X  +  _speed_Y * _speed_Y) ;
+
+//	float _multiplier =  (1) / ( ( (1 / terrainSize.y) * (float)flowMapIteration * 1 ) + 0.000001);
+//	float _water_speed = _multiplier * sqrt( (_speed_X *_speed_X  +  _speed_Y * _speed_Y) * height_slope_snowWeight_Maps[id.xy].y ) ;
+
+//	float _multiplier =  (1) / ( ( (1 / terrainSize.y) * (float)flowMapIteration * 0.5 ) + 0.000001);
+//	float _water_speed = _multiplier * sqrt( (_speed_X *_speed_X  +  _speed_Y * _speed_Y) * height_slope_snowWeight_Maps[id.xy].y * height_slope_snowWeight_Maps[id.xy].y ) ;
+
+//	float _multiplier =  (1) / ( ( (1 / terrainSize.y) * (float)flowMapIteration * 10 ) + 0.000001);
+//	float _water_speed = _multiplier * height_slope_snowWeight_Maps[id.xy].y * sqrt( (abs(_speed_X)  +  abs(_speed_Y) ) ) ;
+
+//	float _multiplier =  (1) / ( ( (1 / terrainSize.y) * (float)flowMapIteration * 20 ) + 0.000001);
+//	float _water_speed = _multiplier * sqrt( (abs(_speed_X)  +  abs(_speed_Y) )    * height_slope_snowWeight_Maps[id.xy].y ) ;
+
+	convexity_concavitiy_flow_Maps[id.xy] = float4(convexity_concavitiy_flow_Maps[id.xy].xy,    _water_speed,    convexity_concavitiy_flow_Maps[id.xy].w) ;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+[numthreads(8,8,1)]
+void CurvatureMap_Generate (uint3 id : SV_DispatchThreadID)
+{
+	float _this_height		= AdjacentHeight(id,   0	,  0);
+
+	float _left_height		= AdjacentHeight(id,  -1	,  0);
+	float _right_height		= AdjacentHeight(id,   1	,  0);
+	float _down_height		= AdjacentHeight(id,   0	, -1);
+	float _up_height		= AdjacentHeight(id,   0	,  1);
+
+	float _left_up_height		= AdjacentHeight(id,  -1	,  1);
+	float _right_up_height		= AdjacentHeight(id,   1	,  1);
+	float _left_down_height		= AdjacentHeight(id,  -1	, -1);
+	float _right_down_height	= AdjacentHeight(id,   1	, -1);
+
+	float _average_height	= ( _left_height + _right_height + _down_height + _up_height   +  _left_up_height + _right_up_height + _left_down_height + _right_down_height) / 8.0 ;
+//	float _average_height	= ( _left_height + _right_height + _down_height + _up_height ) / 4.0;
+
+
+	float _height_difference_from_average = _this_height - _average_height ;
+
+	float _convexity = saturate(_height_difference_from_average * terrainSize.y / 10) ;
+	float _concavity = saturate( -1 * _height_difference_from_average * terrainSize.y / 10) ;  
+
+
+	convexity_concavitiy_flow_Maps[id.xy] = float4( _convexity,  _concavity,  convexity_concavitiy_flow_Maps[id.xy].zw) ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[numthreads(8,8,1)]
+void Generate_SplatMap (uint3 id : SV_DispatchThreadID)
+{
+	int _splatWeightArrayIndex = id.y * alphaMapResolution  +  id.x  ;
+
+	float _weight = 0 ;
+
+	uint _x = (uint)ceil(  ((float)id.x) * (((float)(terrainHeightMapResolution - 1))/((float)(alphaMapResolution -1)))  ) ;
+	uint _y = (uint)ceil(  ((float)id.y) * (((float)(terrainHeightMapResolution - 1))/((float)(alphaMapResolution -1)))  ) ;
+
+	float _weight_this_point		= CalcualteWeight(uint3(_x    , _y    , id.z)	, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+	float _weight_right_point		= CalcualteWeight(uint3(_x +1 , _y    , id.z)	, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+	float _weight_up_point			= CalcualteWeight(uint3(_x    , _y +1 , id.z)	, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+	float _weight_upRight_point		= CalcualteWeight(uint3(_x +1 , _y +1 , id.z)	, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+
+
+//	_weight = 0.25 * (_weight_this_point + _weight_right_point + _weight_up_point + _weight_upRight_point) ;
+//	_weight = CalcualteWeight(id, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+	_weight = CalcualteWeight(uint3(_x    , _y    , id.z)	, splatRuleBufferIndex , splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex]) ;
+
+
+	splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] = _weight + splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] ;
+
+
+	int _channel_index = (splatRuleBufferIndex % 4);
+
+	if			(_channel_index == 0)
+		{splatMapsArray[id.xy] = float4(_weight,    splatMapsArray[id.xy].yzw) ;}
+
+	else if		(_channel_index == 1)
+		{splatMapsArray[id.xy] = float4(splatMapsArray[id.xy].x,   _weight,   splatMapsArray[id.xy].zw) ;}
+
+	else if		(_channel_index == 2)
+		{splatMapsArray[id.xy] = float4(splatMapsArray[id.xy].xy,   _weight,   splatMapsArray[id.xy].w) ;}
+
+	else if		(_channel_index == 3)
+		{splatMapsArray[id.xy] = float4(splatMapsArray[id.xy].xyz,   _weight) ;}
+
+	
+}
+
+
+
+
+
+
+
+[numthreads(8,8,1)]
+void Normalize_SplatMap (uint3 id : SV_DispatchThreadID)
+{
+	int _splatWeightArrayIndex = id.y * alphaMapResolution  +  id.x  ;
+
+	if(splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] > 1)
+	{
+		splatMapsArray[id.xy] /= splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] ;
+	}
+}
+
+
+
+
+

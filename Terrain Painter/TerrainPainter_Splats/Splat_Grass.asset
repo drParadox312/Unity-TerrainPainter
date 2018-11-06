@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2805e08a99e47524aa279caf6481c4d9, type: 3}
+  m_Name: Splat_Grass
+  m_EditorClassIdentifier: 
+  name: Grass
+  terrainLayer: {fileID: 8574412962073106934, guid: f5a7ffd0185cf8349a231ca3373bdc41,
+    type: 2}
+  splatType: 1
+  paintMethod: 0
+  paintRules:
+    flowMapWeight: 0
+    convexityMapWeight: 0
+    concavityMapWeight: 0
+    maxHeight: 0
+    minHeight: 0
+    minHeightBias: 0
+    maxSlope: 0
+    minSlope: 0
+    minSlopeBias: 0
+    biasFrequency: 0
