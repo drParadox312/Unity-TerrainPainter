@@ -19,16 +19,20 @@ public class TerrainPainter_TerrainInspector : Editor
     {
         //       base.OnInspectorGUI();
 
-        if (terrainScript.manager.isInitialized)
+        if(terrainScript.manager)
         {
-            EditorGUILayout.ObjectField("Unity heightmap", terrainScript.renderTexture_unity_heightMap, typeof(RenderTexture));
-            EditorGUILayout.ObjectField("Height, Slope, SnowWeight maps", terrainScript.renderTexture_height_slope_snowWeight_Maps, typeof(RenderTexture));
-            EditorGUILayout.ObjectField("Neighbor terrrains heightmaps", terrainScript.renderTexture_neighbor_terrain_heightMaps, typeof(RenderTexture));
-            EditorGUILayout.ObjectField("Convexity, Concavitiy, Flow maps", terrainScript.renderTexture_convexity_concavitiy_flow_Maps, typeof(RenderTexture));
-        }
-        else
-        {
-            EditorGUILayout.LabelField("TerrainPainter Manager not initialized");
+            if (terrainScript.manager.isInitialized)
+            {
+                EditorGUILayout.ObjectField("Unity heightmap", terrainScript.renderTexture_unity_heightMap, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("Height, Slope, SnowWeight maps", terrainScript.renderTexture_height_slope_snowWeight_water_Maps, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("Neighbor terrrains heightmaps", terrainScript.renderTexture_neighbor_terrain_heightMaps, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("Neighbor terrrains slopemaps", terrainScript.renderTexture_neighbor_terrain_slopeMaps, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("Convexity, Concavitiy, Flow maps", terrainScript.renderTexture_convexity_concavitiy_flow_Maps, typeof(RenderTexture));
+            }
+            else
+            {
+                EditorGUILayout.LabelField("TerrainPainter Manager not initialized");
+            }
         }
     }
 

@@ -57,6 +57,7 @@ public class TerrainPainter_ManagerInspector : Editor
                 {
                     managerScript.UpdateSnowAmount();
                 }
+                 EditorGUILayout.Separator();
 
 
 
@@ -68,6 +69,13 @@ public class TerrainPainter_ManagerInspector : Editor
                 }
                 EditorGUILayout.Separator();
 
+
+                EditorGUI.BeginChangeCheck();
+                managerScript.convexityScale = EditorGUILayout.Slider("Convexity Scale", managerScript.convexityScale, 1f, 30f);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    managerScript.UpdateCurvatureMap();
+                }
 
 
                 EditorGUILayout.Separator();
@@ -183,6 +191,10 @@ public class TerrainPainter_ManagerInspector : Editor
                         if (GUILayout.Button(" Up "))
                         {
                             managerScript.MoveUpSplat(i);
+                            if(selected_splat_index > -1)
+                            {
+                                selected_splat_index = Mathf.Clamp(selected_splat_index - 1, 0, managerScript.splats.Length-1);
+                            }
                         }
 
                         EditorGUILayout.Separator();
@@ -190,6 +202,10 @@ public class TerrainPainter_ManagerInspector : Editor
                         if (GUILayout.Button("Down"))
                         {
                             managerScript.MoveDownSplat(i);
+                            if(selected_splat_index > -1)
+                            {
+                                selected_splat_index = Mathf.Clamp(selected_splat_index + 1, 0, managerScript.splats.Length-1);
+                            }
                         }
 
                         EditorGUILayout.Separator();
@@ -200,6 +216,7 @@ public class TerrainPainter_ManagerInspector : Editor
                         if (GUILayout.Button("-"))
                         {
                             managerScript.RemoveSplat(i);
+                            selected_splat_index = -1 ;
                         }
                         else
                         {
@@ -247,7 +264,7 @@ public class TerrainPainter_ManagerInspector : Editor
 
 
                         managerScript.splats[selected_splat_index].splatType = (SplatType)EditorGUILayout.EnumPopup("Splat Type", managerScript.splats[selected_splat_index].splatType);
-                        managerScript.splats[selected_splat_index].paintMethod = (PaintMethod)EditorGUILayout.EnumPopup("Splat Type", managerScript.splats[selected_splat_index].paintMethod);
+                        managerScript.splats[selected_splat_index].paintMethod = (PaintMethod)EditorGUILayout.EnumPopup("Paint Method", managerScript.splats[selected_splat_index].paintMethod);
                         EditorGUILayout.Separator();
 
 

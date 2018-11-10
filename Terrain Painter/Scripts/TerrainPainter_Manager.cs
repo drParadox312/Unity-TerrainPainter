@@ -24,6 +24,8 @@ public class TerrainPainter_Manager : MonoBehaviour
     public TerrainPainter_Splat[] splats;
     public TerrainLayer[] terrainLayers;
 
+    public SplatPaintRules[] splatPaintRulesArray;
+
     public float maxTerrainHeight = 3000f ;
 
 
@@ -31,6 +33,9 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
     public int flowMapIteration = 10;
+
+    [Range(1f,30f)]
+    public float convexityScale = 10f;
 
     void Awake()
     {
@@ -49,12 +54,25 @@ public class TerrainPainter_Manager : MonoBehaviour
             bool _hasArrayChanged = false;
             Terrain[] _foundTerrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
 
-            for (int i = 0; i < _foundTerrains.Length; i++)
+            if(_foundTerrains != null)
             {
-                if (_foundTerrains[i] != terrains[i])
+                if(_foundTerrains.Length > 0)
                 {
-                    _hasArrayChanged = true;
-                    break;
+                    if(terrains != null)
+                    {
+                        for (int i = 0; i < _foundTerrains.Length; i++)
+                        {
+                            if (_foundTerrains[i] != terrains[i])
+                            {
+                                _hasArrayChanged = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _hasArrayChanged = true;
+                    }
                 }
             }
 
@@ -80,17 +98,37 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void FindTerrains()
     {
-        terrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
+        
 
         if (computeShader == null)
             return;
+
+
+        terrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
+
+        int _hmR = terrains[0].terrainData.heightmapResolution;
+        int _amR = terrains[0].terrainData.alphamapResolution;
+
+        for(int i=1 ; i< terrains.Length; i++)
+        {
+            if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution)
+            {
+                Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.") ;
+                return ;
+            }
+        }
+
+
+        if(splats == null)
+            splats = new TerrainPainter_Splat[0] ;
+
 
         NameIDs.SetUpNameIDS(computeShader);
 
         RemoveNullElementFromSplatArray();
 
 
-        if (terrains.Length == 0 || splats.Length == 0)
+    if (terrains.Length == 0)
             return;
 
 
@@ -113,13 +151,15 @@ public class TerrainPainter_Manager : MonoBehaviour
         }
 
         UpdateTerrainsAtInitialize();
+
+        isInitialized = true;
     }
 
 
 
     public void TerrainHeightmapChanged(int p_terrainIndex)
     {
-        Debug.Log("terrain changed : " + terrains[p_terrainIndex]);
+ //       Debug.Log("terrain changed : " + terrains[p_terrainIndex]);
         hasTerrainHeigtmapChanged = true;
     }
 
@@ -196,6 +236,8 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         isUpdating = true;
 
+        
+
         GenerateCurvatureMaps();
         GenerateSplatMaps();
 
@@ -255,9 +297,33 @@ public class TerrainPainter_Manager : MonoBehaviour
             terrainScripts[i].SetUpTerrainLayers();
         }
 
+                for (int i = 0; i< terrains.Length; i++)
+        {
+            terrainScripts[i].SetUpSplatMapArray();
+        }
+
+        UpdateSplatPaintRulesArray();
         UpdateSplatmapMap();
     }
 
+
+
+
+
+
+
+    void UpdateSplatPaintRulesArray()
+    {
+        splatPaintRulesArray = new SplatPaintRules[splats.Length];
+
+        for (int i = 0; i <  splats.Length; i++)
+        {
+            splatPaintRulesArray[i] =  splats[i].paintRules;
+            splatPaintRulesArray[i].flowMapWeight =  splats[i].useFlowMapMask == true ?  splats[i].paintRules.flowMapWeight : -1f;
+            splatPaintRulesArray[i].convexityMapWeight =  splats[i].useConvexityMapMask == true ?  splats[i].paintRules.convexityMapWeight : -1f;
+            splatPaintRulesArray[i].concavityMapWeight =  splats[i].useConcavitiyMapMask == true ?  splats[i].paintRules.concavityMapWeight : -1f;
+        }
+    }
 
 
 
@@ -307,6 +373,11 @@ public class TerrainPainter_Manager : MonoBehaviour
         for (int i = 0; i < terrainScripts.Length; i++)
         {
             terrainScripts[i].Generate_Slope_Map();
+        }
+
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            terrainScripts[i].Generate_NeighborTerrain_Slope_Map();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
@@ -414,12 +485,15 @@ public class TerrainPainter_Manager : MonoBehaviour
     public void RemoveSplat(int p_index)
     {
         TerrainPainter_Splat[] _newSplats = new TerrainPainter_Splat[splats.Length - 1];
-        for (int i = 0; i < splats.Length; i++)
+        if(_newSplats.Length > 0)
         {
-            if (i < p_index)
-                _newSplats[i] = splats[i];
-            else if (i > p_index)
-                _newSplats[i -1] = splats[i];
+            for (int i = 0; i < splats.Length; i++)
+            {
+                if (i < p_index)
+                    _newSplats[i] = splats[i];
+                else if (i > p_index)
+                    _newSplats[i -1] = splats[i];
+            }
         }
         splats = _newSplats;
 
@@ -473,11 +547,15 @@ public class TerrainPainter_Manager : MonoBehaviour
     void RemoveNullElementFromSplatArray()
     {
         int _nullCount = 0;
-        for (int i = 0; i < splats.Length; i++)
+
+        if(splats != null)
         {
-            if (splats[i] == null)
+            for (int i = 0; i < splats.Length; i++)
             {
-                _nullCount++;
+                if (splats[i] == null)
+                {
+                    _nullCount++;
+                }
             }
         }
 

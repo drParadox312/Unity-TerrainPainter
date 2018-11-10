@@ -19,7 +19,7 @@ MonoBehaviour:
   paintMethod: 0
   paintRules:
     flowMapWeight: 0.8
-    convexityMapWeight: 0.9
+    convexityMapWeight: 0.65
     concavityMapWeight: 0.9
     maxHeight: 0
     minHeight: 0
