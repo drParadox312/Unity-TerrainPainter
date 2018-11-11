@@ -46,9 +46,12 @@ public class TerrainPainter_TerrainInspector : Editor
         {
             if (Event.current.type == EventType.MouseUp)
             {
-                if (terrainScript.terrain && terrainScript.computeShader)
+                if (Event.current.button == 0)
                 {
-                    terrainScript.manager.TerrainModifyingEnded();
+                    if (terrainScript.terrain && terrainScript.computeShader)
+                    {
+                        terrainScript.manager.TerrainModifyingEnded();
+                    }
                 }
             }
         }

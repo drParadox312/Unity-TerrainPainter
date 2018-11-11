@@ -22,6 +22,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
+
     // genereted maps
     public RenderTexture renderTexture_unity_heightMap;
     public RenderTexture renderTexture_neighbor_terrain_heightMaps;
@@ -53,8 +54,6 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public int alphamapResolution;
     public int am_x;            //  alphaMap_Width ;
     public int am_y;            //  alphaMap_Height
-    public int bm_x;            //  baseMap_Width ;
-    public int bm_y;            //  baseMap_Height
 
     public Vector4 hasNeighborTerrains;
     public Vector4 cornerNeighborTerrainsHeights;
@@ -120,12 +119,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
         SetUpTerrainLayers();
         SetUpSplatMapArray();
         SetUpTextures();
-        
     }
-
-
-
-
 
 
 
@@ -133,18 +127,15 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     void SetUpTerrainParameters()
     {
-        hm_x = terrain.terrainData.heightmapWidth -1;
-        hm_y = terrain.terrainData.heightmapHeight -1;
+        hm_x = terrain.terrainData.heightmapWidth ;
+        hm_y = terrain.terrainData.heightmapHeight ;
 
         am_x = terrain.terrainData.alphamapWidth ;
         am_y = terrain.terrainData.alphamapHeight ;
 
-        bm_x = terrain.terrainData.baseMapResolution;
-        bm_y = terrain.terrainData.baseMapResolution;
-
         terrainSize = (Vector4)(terrain.terrainData.size);
         terrainPosition = (Vector4)(this.transform.position);
-        terrainHeightMapResolution = terrain.terrainData.heightmapResolution -1;
+        terrainHeightMapResolution = terrain.terrainData.heightmapResolution ;
         alphamapResolution = terrain.terrainData.alphamapResolution;
 
         hasNeighborTerrains = new Vector4
@@ -204,7 +195,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     void SetUpTextures()
     {
-        renderTexture_unity_heightMap = CreateRenderTexture(hm_x +1, terrain.terrainData.heightmapTexture.format);
+        renderTexture_unity_heightMap = CreateRenderTexture(hm_x , terrain.terrainData.heightmapTexture.format);
     //    renderTexture_waterMap = CreateRenderTexture(hm_x, RenderTextureFormat.R16);
     //    renderTexture_waterOutMap_this = CreateRenderTexture(hm_x);
         renderTexture_height_slope_snowWeight_water_Maps = CreateRenderTexture(hm_x);
@@ -460,8 +451,6 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
         computeShader.Dispatch(NameIDs.Generate_NeighborTerrain_Height_Map, (hm_x + extraThread) / 8, (hm_y + extraThread) / 8, 1);
     }
-
-
 
 
 
@@ -745,11 +734,11 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public void ReleaseRenderTexturesForWaterMap()
     {
         renderTexture_neighbor_terrain_waterMaps.Release();
+
         renderTexture_waterOutMap_this.Release();
         renderTexture_waterOutMap_up.Release();
         renderTexture_waterOutMap_right.Release();
-        renderTexture_waterOutMap_down.Release();
-        
+        renderTexture_waterOutMap_down.Release();  
     }
 
 
@@ -899,7 +888,6 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
             if(splatPaintRulesBuffer != null)
                 splatPaintRulesBuffer.Release();
-            
         }
     }
 

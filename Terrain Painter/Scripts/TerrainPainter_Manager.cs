@@ -20,6 +20,7 @@ public class TerrainPainter_Manager : MonoBehaviour
     public bool autoUpdateCurvatureMap = true ;
 
     public bool hasTerrainHeigtmapChanged = false;
+    public bool[] heigtmapChangedTerrains ;
 
     public TerrainPainter_Splat[] splats;
     public TerrainLayer[] terrainLayers;
@@ -92,6 +93,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
         hasTerrainHeigtmapChanged = false;
+        heigtmapChangedTerrains = new bool[terrains.Length];
         isUpdating = false;
     }
 
@@ -159,8 +161,8 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void TerrainHeightmapChanged(int p_terrainIndex)
     {
- //       Debug.Log("terrain changed : " + terrains[p_terrainIndex]);
         hasTerrainHeigtmapChanged = true;
+        heigtmapChangedTerrains[p_terrainIndex] = true ;
     }
 
 
@@ -172,10 +174,16 @@ public class TerrainPainter_Manager : MonoBehaviour
 
             if (autoUpdate && hasTerrainHeigtmapChanged)
             {
+                for(int i=0; i<heigtmapChangedTerrains.Length; i++ )
+                {
+                    if(heigtmapChangedTerrains[i])
+                        Debug.Log("index : " + i) ;
+                }
                 UpdateTerrains();
             }
 
             hasTerrainHeigtmapChanged = false;
+            heigtmapChangedTerrains = new bool[terrains.Length];
         }
     }
 
@@ -202,10 +210,10 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void UpdateTerrainsAtInitialize()
     {
-        GenerateHeightSlopeSnowWeightsMaps();
+        GenerateHeightSlopeSnowWeightsMaps(true);
         GenerateFlowMaps();
-        GenerateCurvatureMaps();
-        GenerateSplatMaps();
+        GenerateCurvatureMaps(true);
+        GenerateSplatMaps(true);
 
         isUpdating = false;
     }
@@ -358,31 +366,36 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-    public void GenerateHeightSlopeSnowWeightsMaps()
+    public void GenerateHeightSlopeSnowWeightsMaps(bool p_atInitialize = false)
     {
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_Height_Map();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_Height_Map();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_NeighborTerrain_Height_Map();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_NeighborTerrain_Height_Map();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_Slope_Map();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_Slope_Map();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_NeighborTerrain_Slope_Map();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_NeighborTerrain_Slope_Map();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_SnowWeight_Maps();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_SnowWeight_Maps();
         }
     }
 
@@ -427,30 +440,34 @@ public class TerrainPainter_Manager : MonoBehaviour
     }
 
 
-    public void GenerateCurvatureMaps()
+    public void GenerateCurvatureMaps(bool p_atInitialize = false)
     {
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].CurvatureMap_Generate();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].CurvatureMap_Generate();
         }
     }
 
 
-    public void GenerateSplatMaps()
+    public void GenerateSplatMaps(bool p_atInitialize = false)
     {
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Generate_SplatMap();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_SplatMap();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].Normalize_SplatMap();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Normalize_SplatMap();
         }
 
         for (int i = 0; i < terrainScripts.Length; i++)
         {
-            terrainScripts[i].WriteToTerrainAlphamap();
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].WriteToTerrainAlphamap();
         }
 
 

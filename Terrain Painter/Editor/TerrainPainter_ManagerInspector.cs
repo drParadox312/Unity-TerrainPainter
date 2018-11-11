@@ -36,7 +36,7 @@ public class TerrainPainter_ManagerInspector : Editor
             managerScript.computeShader = (ComputeShader)EditorGUILayout.ObjectField("ComputeShader", managerScript.computeShader, typeof(ComputeShader));
             EditorGUILayout.Toggle("Initialized", managerScript.isInitialized);
             EditorGUILayout.Toggle("Is updating", managerScript.isUpdating);
-
+            EditorGUILayout.Toggle("Has Terrain Heigtmap Changed", managerScript.hasTerrainHeigtmapChanged);
 
 
             if (managerScript.isInitialized)

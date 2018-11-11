@@ -21,12 +21,12 @@ MonoBehaviour:
     flowMapWeight: 0
     convexityMapWeight: 0
     concavityMapWeight: 0
-    maxHeight: 600
+    maxHeight: 1500
     minHeight: 0
     minHeightBias: 250
     maxSlope: 90
     minSlope: 45
-    minSlopeBias: 15
+    minSlopeBias: 0
     biasFrequency: 0.01
   useFlowMapMask: 0
   useConvexityMapMask: 0
