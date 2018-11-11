@@ -44,7 +44,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
     // other paaramters
-    public int extraThread = 0;
+    public int extraThread = 8;
     public int hm_x;  // heightMap_Width
     public int hm_y;  // heightMap_Height
     public Vector4 terrainSize;
