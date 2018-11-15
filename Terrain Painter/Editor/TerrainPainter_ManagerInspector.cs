@@ -374,6 +374,8 @@ public class TerrainPainter_ManagerInspector : Editor
                                     
                                     EditorGUILayout.BeginHorizontal();
                                     EditorGUILayout.MinMaxSlider(ref managerScript.splats[selected_splat_index].paintRules.heightMinStart, ref managerScript.splats[selected_splat_index].paintRules.heightMaxEnd, 0f, managerScript.maxTerrainHeight);
+                                    managerScript.splats[selected_splat_index].paintRules.heightMinStart = Mathf.Clamp(managerScript.splats[selected_splat_index].paintRules.heightMinStart, 0f, managerScript.splats[selected_splat_index].paintRules.heightMinEnd);
+                                    managerScript.splats[selected_splat_index].paintRules.heightMaxEnd = Mathf.Clamp(managerScript.splats[selected_splat_index].paintRules.heightMaxEnd, managerScript.splats[selected_splat_index].paintRules.heightMaxStart, managerScript.maxTerrainHeight);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
                                     
@@ -424,6 +426,8 @@ public class TerrainPainter_ManagerInspector : Editor
 
                                     EditorGUILayout.BeginHorizontal();
                                     EditorGUILayout.MinMaxSlider(ref managerScript.splats[selected_splat_index].paintRules.slopeMinStart, ref managerScript.splats[selected_splat_index].paintRules.slopeMaxEnd, 0f, 90f);
+                                    managerScript.splats[selected_splat_index].paintRules.slopeMinStart = Mathf.Clamp(managerScript.splats[selected_splat_index].paintRules.slopeMinStart, 0f, managerScript.splats[selected_splat_index].paintRules.slopeMinEnd);
+                                    managerScript.splats[selected_splat_index].paintRules.slopeMaxEnd = Mathf.Clamp(managerScript.splats[selected_splat_index].paintRules.slopeMaxEnd, managerScript.splats[selected_splat_index].paintRules.slopeMaxStart, 90f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 
