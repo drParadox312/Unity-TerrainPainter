@@ -396,7 +396,17 @@ float CalculateSlope(uint3 id)
 
 	float3 _normal = float3(0,0,0);
 
+<<<<<<< HEAD
 	_normal = CalculateNormal(id);
+=======
+	float _left_to_right_height_difference	= AdjacentHeight(id, -1, 0)  -  AdjacentHeight(id, 1, 0) ;
+	float _down_to_up_height_difference		= AdjacentHeight(id, 0, -1)  -  AdjacentHeight(id, 0 , 1) ; 
+
+//	_normal = float3( ((float)(terrainHeightMapResolution - 0)) * _left_to_right_height_difference ,     4.0,     ((float)(terrainHeightMapResolution - 0)) * _down_to_up_height_difference) ;
+//	_normal = float3( _left_to_right_height_difference ,     4.0 / terrainSize.y,   _down_to_up_height_difference) ;
+	_normal = float3( _left_to_right_height_difference * terrainSize.x ,    4.0 * ((terrainSize.x * terrainSize.z) / (terrainSize.y * terrainSize.y)),   _down_to_up_height_difference * terrainSize.z) ;
+	_normal = normalize(_normal) ;
+>>>>>>> a08be985dd72bf33084339a5e2d56064e5a18029
 
 	_slope = 1 - dot(float3(0.0 , 1.0 , 0.0), _normal) ;
 
@@ -1000,8 +1010,13 @@ float CalcualteWeight(uint3 id, int p_left_right, int p_up_down, int p_splatRule
 [numthreads(8,8,1)]
 void Generate_Height_Map (uint3 id : SV_DispatchThreadID)
 {
+<<<<<<< HEAD
 	//////////// Multiplied with 2. Because Unity's Terrain.TerrainData.heightmap returns halved values of heights ;
 	float _height = 2.0 * (unity_heightMap[id.xy])  ;	
+=======
+	// Multiplied with 2. Because Unity's Terrain.TerrainData.heightmap returns halved values of heights ;
+	float _height = 2 * (unity_heightMap[id.xy])  ;	
+>>>>>>> a08be985dd72bf33084339a5e2d56064e5a18029
 	height_slope_snowWeight_water_Maps[id.xy] = float4( _height,    height_slope_snowWeight_water_Maps[id.xy].yzw ) ;
 }
 
@@ -1233,7 +1248,11 @@ void Generate_SplatMap (uint3 id : SV_DispatchThreadID)
 	int _splatWeightArrayIndex = id.y * alphaMapResolution  +  id.x  ;
 
 	float _weight = 0 ;	
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> a08be985dd72bf33084339a5e2d56064e5a18029
 	uint _x = (uint)round(  ((float)id.x) * (((float)(terrainHeightMapResolution - 1))/((float)(alphaMapResolution -1)))  ) ;
 	uint _y = (uint)round(  ((float)id.y) * (((float)(terrainHeightMapResolution - 1))/((float)(alphaMapResolution -1)))  ) ;
 
