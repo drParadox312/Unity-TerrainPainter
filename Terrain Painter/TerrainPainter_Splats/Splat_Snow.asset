@@ -15,19 +15,59 @@ MonoBehaviour:
   name: Snow
   terrainLayer: {fileID: 8574412962073106934, guid: ae874ec0db78fac478e5f79197d94c33,
     type: 2}
+  paintRules:
+    splatType: 0
+    paintMethod: 0
+    useFlowMap: 0
+    useConvexityMap: 0
+    useConcavityMap: 0
+    isInverseFlowMap: 0
+    isInverseConvexityMap: 0
+    isInverseConcavityMap: 0
+    flowMapWeight: 0.7
+    flowMapScale: 750
+    flowMapBias: 0.3
+    flowMapHeightWeight: 0
+    isInverseFlowMapHeightWeight: 0
+    flowMapSlopeWeight: 0
+    isInverseFlowMapSlopeWeight: 1
+    flowMapEffect: 0
+    convexityMapWeight: 0.01
+    convexityMapBias: 1
+    convexityMapEffect: 0
+    concavityMapWeight: 0.586
+    concavityMapBias: 1
+    concavityMapEffect: 0
+    heightMinStart: 0
+    heightMinEnd: 0
+    heightMaxStart: 1500
+    heightMaxEnd: 1500
+    heightBiasFrequency: 10
+    heightBiasCutoff: 0
+    isInverseHeightBias: 0
+    slopeMinStart: 30
+    slopeMinEnd: 30
+    slopeMaxStart: 60
+    slopeMaxEnd: 60
+    slopeBiasFrequency: 10
+    slopeBiasCutoff: 0
+    isInverseSlopeBias: 0
+    snowAmount: 0.671
+    snowBiasSize: 0.1
+    snowBiasFrequency: 15
+    snowBiasCutoff: 0.25
   splatType: 2
   paintMethod: 0
-  paintRules:
-    flowMapWeight: 0.8
-    convexityMapWeight: 0.65
-    concavityMapWeight: 0.9
-    maxHeight: 0
-    minHeight: 0
-    minHeightBias: 0
-    maxSlope: 0
-    minSlope: 0
-    minSlopeBias: 0
-    biasFrequency: 8
+  flowMapEffect: 0
+  convexityMapEffect: 1
+  concavityMapEffect: 1
+  isInverseHeightBias: 0
+  isInverseSlopeBias: 0
   useFlowMapMask: 1
   useConvexityMapMask: 0
-  useConcavitiyMapMask: 0
+  useConcavityMapMask: 0
+  isInverseFlowMap: 0
+  isInverseConvexityMap: 0
+  isInverseConcavityMap: 0
+  isInverseFlowMapHeightWeight: 0
+  isInverseFlowMapSlopeWeight: 0

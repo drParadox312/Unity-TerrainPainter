@@ -17,7 +17,6 @@ public class TerrainPainter_Manager : MonoBehaviour
     public bool checkForNewTerrainsOnEnable = true ;
     public bool autoUpdate = true ;
     public bool autoUpdateFlowMap;
-    public bool autoUpdateCurvatureMap = true ;
 
     public bool hasTerrainHeigtmapChanged = false;
     public bool[] heigtmapChangedTerrains ;
@@ -29,14 +28,8 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public float maxTerrainHeight = 3000f ;
 
-
-    public float snowAmount = 0.75f;
-
-
     public int flowMapIteration = 10;
 
-    [Range(1f,30f)]
-    public float convexityScale = 10f;
 
     void Awake()
     {
@@ -83,18 +76,10 @@ public class TerrainPainter_Manager : MonoBehaviour
                 FindTerrains();
             }
         }
-
-
-        if (isInitialized == false)
+        else if(isInitialized == false)
         {
             FindTerrains();
-            isInitialized = true;
         }
-
-
-        hasTerrainHeigtmapChanged = false;
-        heigtmapChangedTerrains = new bool[terrains.Length];
-        isUpdating = false;
     }
 
 
@@ -111,11 +96,20 @@ public class TerrainPainter_Manager : MonoBehaviour
         int _hmR = terrains[0].terrainData.heightmapResolution;
         int _amR = terrains[0].terrainData.alphamapResolution;
 
-        for(int i=1 ; i< terrains.Length; i++)
+        for(int i=0 ; i< terrains.Length; i++)
         {
-            if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution)
+            if(i > 0)
             {
-                Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.") ;
+                if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution)
+                {
+                    Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.") ;
+                    return ;
+                }
+            }
+
+            if(terrains[i].drawInstanced == false)
+            {
+                Debug.LogError("Enable drawInstanced toggle on terrain's settings tab.") ;
                 return ;
             }
         }
@@ -123,14 +117,16 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         if(splats == null)
             splats = new TerrainPainter_Splat[0] ;
+        else
+            RemoveNullElementFromSplatArray();
+
 
 
         NameIDs.SetUpNameIDS(computeShader);
 
-        RemoveNullElementFromSplatArray();
 
 
-    if (terrains.Length == 0)
+        if (terrains.Length == 0)
             return;
 
 
@@ -155,6 +151,9 @@ public class TerrainPainter_Manager : MonoBehaviour
         UpdateTerrainsAtInitialize();
 
         isInitialized = true;
+        hasTerrainHeigtmapChanged = false;
+        heigtmapChangedTerrains = new bool[terrains.Length];
+        isUpdating = false;
     }
 
 
@@ -174,11 +173,6 @@ public class TerrainPainter_Manager : MonoBehaviour
 
             if (autoUpdate && hasTerrainHeigtmapChanged)
             {
-                for(int i=0; i<heigtmapChangedTerrains.Length; i++ )
-                {
-                    if(heigtmapChangedTerrains[i])
-                        Debug.Log("index : " + i) ;
-                }
                 UpdateTerrains();
             }
 
@@ -186,21 +180,21 @@ public class TerrainPainter_Manager : MonoBehaviour
             heigtmapChangedTerrains = new bool[terrains.Length];
         }
     }
+    
 
 
     public void UpdateTerrains()
     {
-        GenerateHeightSlopeSnowWeightsMaps();
+        GenerateHeightSlopeSnowWeightsMaps(true);
 
 
         if(autoUpdateFlowMap)
-            GenerateFlowMaps();
+            GenerateFlowMaps(true);
 
-        if(autoUpdateCurvatureMap)
-            GenerateCurvatureMaps();
+        GenerateCurvatureMaps(true);
 
 
-        GenerateSplatMaps();
+        GenerateSplatMaps(true);
 
         isUpdating = false;
     }
@@ -211,7 +205,7 @@ public class TerrainPainter_Manager : MonoBehaviour
     public void UpdateTerrainsAtInitialize()
     {
         GenerateHeightSlopeSnowWeightsMaps(true);
-        GenerateFlowMaps();
+        GenerateFlowMaps(true);
         GenerateCurvatureMaps(true);
         GenerateSplatMaps(true);
 
@@ -223,21 +217,21 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-    public void UpdateFlowMap()
+    public void UpdateFlowMap(bool p_atInitialize = false)
     {
         if (isUpdating == true)
             return;
 
         isUpdating = true;
 
-        GenerateFlowMaps();
-        GenerateCurvatureMaps();
-        GenerateSplatMaps();
+        GenerateFlowMaps(true);
+        GenerateCurvatureMaps(p_atInitialize);
+        GenerateSplatMaps(p_atInitialize);
 
         isUpdating = false;
     }
 
-    public void UpdateCurvatureMap()
+    public void UpdateCurvatureMap(bool p_atInitialize = false)
     {
         if (isUpdating == true)
             return;
@@ -246,20 +240,21 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         
 
-        GenerateCurvatureMaps();
-        GenerateSplatMaps();
+        GenerateCurvatureMaps(p_atInitialize);
+        GenerateSplatMaps(p_atInitialize);
 
         isUpdating = false;
     }
 
-    public void UpdateSplatmapMap()
+    public void UpdateSplatmapMap(bool p_atInitialize = false)
     {
         if (isUpdating == true)
             return;
 
         isUpdating = true;
 
-        GenerateSplatMaps();
+        UpdateSplatPaintRulesArray();
+        GenerateSplatMaps(p_atInitialize);
 
         isUpdating = false;
     }
@@ -271,7 +266,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-    public void UpdateTerrainMaxHeight()
+    public void UpdateTerrainMaxHeight(bool p_atInitialize = false)
     {
         for (int i = 0; i < terrains.Length; i++)
         {
@@ -287,7 +282,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-    public void UpdateSplats()
+    public void UpdateSplats(bool p_atInitialize = false)
     {
         if (isUpdating == true)
             return;
@@ -311,7 +306,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         }
 
         UpdateSplatPaintRulesArray();
-        UpdateSplatmapMap();
+        UpdateSplatmapMap(p_atInitialize);
     }
 
 
@@ -326,10 +321,22 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         for (int i = 0; i <  splats.Length; i++)
         {
-            splatPaintRulesArray[i] =  splats[i].paintRules;
-            splatPaintRulesArray[i].flowMapWeight =  splats[i].useFlowMapMask == true ?  splats[i].paintRules.flowMapWeight : -1f;
-            splatPaintRulesArray[i].convexityMapWeight =  splats[i].useConvexityMapMask == true ?  splats[i].paintRules.convexityMapWeight : -1f;
-            splatPaintRulesArray[i].concavityMapWeight =  splats[i].useConcavitiyMapMask == true ?  splats[i].paintRules.concavityMapWeight : -1f;
+            splatPaintRulesArray[i] = splats[i].paintRules;
+            splatPaintRulesArray[i].splatType =  (float)splats[i].splatType ;
+            splatPaintRulesArray[i].paintMethod =  (float)splats[i].paintMethod ;
+            splatPaintRulesArray[i].isInverseHeightBias =  splats[i].isInverseHeightBias == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseSlopeBias =  splats[i].isInverseSlopeBias == true ?  1f : -1f;
+            splatPaintRulesArray[i].useFlowMap =  splats[i].useFlowMapMask == true ?  1f : -1f;
+            splatPaintRulesArray[i].useConvexityMap =  splats[i].useConvexityMapMask == true ?  1f : -1f;
+            splatPaintRulesArray[i].useConcavityMap =  splats[i].useConcavityMapMask == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseFlowMap =  splats[i].isInverseFlowMap == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseConvexityMap =  splats[i].isInverseConvexityMap == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseConcavityMap =  splats[i].isInverseConcavityMap == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseFlowMapHeightWeight =  splats[i].isInverseFlowMapHeightWeight == true ?  1f : -1f;
+            splatPaintRulesArray[i].isInverseFlowMapSlopeWeight =  splats[i].isInverseFlowMapSlopeWeight == true ?  1f : -1f;
+            splatPaintRulesArray[i].flowMapEffect =  (float)splats[i].flowMapEffect ;
+            splatPaintRulesArray[i].convexityMapEffect =  (float)splats[i].convexityMapEffect ;
+            splatPaintRulesArray[i].concavityMapEffect =  (float)splats[i].concavityMapEffect ;
         }
     }
 
@@ -338,23 +345,6 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-
-
-
-    public void UpdateSnowAmount()
-    {
-        for (int i = 0; i < terrains.Length; i++)
-        {
-            terrainScripts[i].snowAmount = snowAmount;
-        }
-
-        UpdateSplatmapMap();
-    }
-
-
-
-
-   
 
 
 
@@ -400,41 +390,47 @@ public class TerrainPainter_Manager : MonoBehaviour
     }
 
 
-    public void GenerateFlowMaps()
+    public void GenerateFlowMaps(bool p_atInitialize = false)
     {
         if (flowMapIteration > 0)
         {
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                terrainScripts[i].FlowMap_AddWater();
+                if(p_atInitialize || autoUpdateFlowMap )
+                    terrainScripts[i].FlowMap_AddWater();
             }
 
             for (int j = 0; j < flowMapIteration; j++)
             {
                 for (int i = 0; i < terrainScripts.Length; i++)
                 {
-                    terrainScripts[i].FlowMap_GenerateNeighborTerrainWaterMaps();
+                    if(p_atInitialize || autoUpdateFlowMap )
+                        terrainScripts[i].FlowMap_GenerateNeighborTerrainWaterMaps();
                 }
 
                 for (int i = 0; i < terrainScripts.Length; i++)
                 {
-                    terrainScripts[i].FlowMap_CalculateWaterOut();
+                    if(p_atInitialize || autoUpdateFlowMap )
+                        terrainScripts[i].FlowMap_CalculateWaterOut();
                 }
 
                 for (int i = 0; i < terrainScripts.Length; i++)
                 {
-                    terrainScripts[i].FlowMap_MoveWater();
+                    if(p_atInitialize || autoUpdateFlowMap )
+                        terrainScripts[i].FlowMap_MoveWater();
                 }
             }
 
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                terrainScripts[i].FlowMap_Generate();
+                if(p_atInitialize || autoUpdateFlowMap )
+                    terrainScripts[i].FlowMap_Generate();
             }
 
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                terrainScripts[i].ReleaseRenderTexturesForWaterMap();
+                if(p_atInitialize || autoUpdateFlowMap )
+                    terrainScripts[i].ReleaseRenderTexturesForWaterMap();
             }
         }
     }

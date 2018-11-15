@@ -17,12 +17,16 @@ public class TerrainPainter_TerrainInspector : Editor
 
     public override void OnInspectorGUI()
     {
-        //       base.OnInspectorGUI();
+        //      base.OnInspectorGUI();
 
         if(terrainScript.manager)
         {
             if (terrainScript.manager.isInitialized)
             {
+                for(int i=0; i<terrainScript.splatMapsArray.Length; i++)
+                {
+                    EditorGUILayout.ObjectField("Splatmap " + i + " ", terrainScript.splatMapsArray[i], typeof(RenderTexture));
+                }
                 EditorGUILayout.ObjectField("Unity heightmap", terrainScript.renderTexture_unity_heightMap, typeof(RenderTexture));
                 EditorGUILayout.ObjectField("Height, Slope, SnowWeight maps", terrainScript.renderTexture_height_slope_snowWeight_water_Maps, typeof(RenderTexture));
                 EditorGUILayout.ObjectField("Neighbor terrrains heightmaps", terrainScript.renderTexture_neighbor_terrain_heightMaps, typeof(RenderTexture));

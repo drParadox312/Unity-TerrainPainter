@@ -7,7 +7,7 @@ namespace TerrainPainter
 {
     public enum SplatType
     {
-        Defalut = 0,
+        Default = 0,
         Base = 1,
         Snow = 2
     };
@@ -18,22 +18,63 @@ namespace TerrainPainter
         PaintAndBlend = 1
     };
 
+    public enum MapMaskEffect
+    {
+        Include = 0,
+        Additive = 1
+    };
+
     [System.Serializable]
     public struct SplatPaintRules
     {
+        public float splatType;
+	    public float paintMethod;
+
+        public float useFlowMap;
+	    public float useConvexityMap;
+	    public float useConcavityMap;
+
+        public float isInverseFlowMap;
+	    public float isInverseConvexityMap;
+	    public float isInverseConcavityMap;
+
         public float flowMapWeight;
+        public float flowMapScale;
+        public float flowMapBias;
+        public float flowMapHeightWeight;
+        public float isInverseFlowMapHeightWeight;
+	    public float flowMapSlopeWeight;
+	    public float isInverseFlowMapSlopeWeight;
+        public float flowMapEffect;
+
         public float convexityMapWeight;
+        public float convexityMapBias;
+        public float convexityMapEffect;
+
         public float concavityMapWeight;
+        public float concavityMapBias;
+        public float concavityMapEffect;
 
-        public float maxHeight;
-        public float minHeight;
-        public float minHeightBias;
+        public float heightMinStart;
+        public float heightMinEnd;
+        public float heightMaxStart;
+        public float heightMaxEnd;
+        public float heightBiasFrequency;
+        public float heightBiasCutoff;
+        public float isInverseHeightBias;
 
-        public float maxSlope;
-        public float minSlope;
-        public float minSlopeBias;
+        public float slopeMinStart;
+        public float slopeMinEnd;
+        public float slopeMaxStart;
+        public float slopeMaxEnd;
+        public float slopeBiasFrequency;
+        public float slopeBiasCutoff;
+        public float isInverseSlopeBias;
 
-        public float biasFrequency;
+        public float snowAmount;
+        public float snowBiasSize;
+        public float snowBiasFrequency;
+        public float snowBiasCutoff;
     };
 
     [System.Serializable]
@@ -59,6 +100,7 @@ namespace TerrainPainter
 
         // genereted maps
         public static int unity_heightMap;
+        public static int unity_normalMap;
         public static int height_slope_snowWeight_water_Maps_left;
         public static int height_slope_snowWeight_water_Maps_right;
         public static int height_slope_snowWeight_water_Maps_down;
@@ -94,13 +136,9 @@ namespace TerrainPainter
         public static int terrainSize;
         public static int terrainPosition;
         public static int terrainHeightMapResolution;
-        public static int splatType;
-        public static int paintMethod;
         public static int splatRuleBufferIndex;
         public static int alphaMapResolution;
-        public static int snowAmount;
         public static int flowMapIteration;
-        public static int convexityScale;
         public static int hasNeighborTerrains;
         public static int cornerNeighborTerrainsHeights;
         public static int cornerNeighborTerrainsSlopes;
@@ -128,6 +166,7 @@ namespace TerrainPainter
 
             // render textures
             unity_heightMap = Shader.PropertyToID("unity_heightMap");
+            unity_normalMap = Shader.PropertyToID("unity_normalMap");
             height_slope_snowWeight_water_Maps_left = Shader.PropertyToID("height_slope_snowWeight_water_Maps_left");
             height_slope_snowWeight_water_Maps_right = Shader.PropertyToID("height_slope_snowWeight_water_Maps_right");
             height_slope_snowWeight_water_Maps_down = Shader.PropertyToID("height_slope_snowWeight_water_Maps_down");
@@ -165,12 +204,8 @@ namespace TerrainPainter
             terrainPosition = Shader.PropertyToID("terrainPosition");
             terrainHeightMapResolution = Shader.PropertyToID("terrainHeightMapResolution");
             splatRuleBufferIndex = Shader.PropertyToID("splatRuleBufferIndex");
-            splatType = Shader.PropertyToID("splatType");
-            paintMethod = Shader.PropertyToID("paintMethod");
             alphaMapResolution = Shader.PropertyToID("alphaMapResolution");
-            snowAmount = Shader.PropertyToID("snowAmount");
             flowMapIteration = Shader.PropertyToID("flowMapIteration");
-            convexityScale = Shader.PropertyToID("convexityScale");
             hasNeighborTerrains = Shader.PropertyToID("hasNeighborTerrains");
             cornerNeighborTerrainsHeights = Shader.PropertyToID("cornerNeighborTerrainsHeights");
             cornerNeighborTerrainsSlopes = Shader.PropertyToID("cornerNeighborTerrainsSlopes");

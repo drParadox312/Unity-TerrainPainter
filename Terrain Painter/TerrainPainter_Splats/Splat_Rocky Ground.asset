@@ -15,19 +15,59 @@ MonoBehaviour:
   name: Rocky Ground
   terrainLayer: {fileID: 8574412962073106934, guid: 73e8f45c6e447494090cb487d851291c,
     type: 2}
+  paintRules:
+    splatType: 0
+    paintMethod: 0
+    useFlowMap: 0
+    useConvexityMap: 0
+    useConcavityMap: 0
+    isInverseFlowMap: 0
+    isInverseConvexityMap: 0
+    isInverseConcavityMap: 0
+    flowMapWeight: 0
+    flowMapScale: 0
+    flowMapBias: 0
+    flowMapHeightWeight: 0
+    isInverseFlowMapHeightWeight: 0
+    flowMapSlopeWeight: 0
+    isInverseFlowMapSlopeWeight: 0
+    flowMapEffect: 0
+    convexityMapWeight: 0
+    convexityMapBias: 0
+    convexityMapEffect: 0
+    concavityMapWeight: 0
+    concavityMapBias: 0
+    concavityMapEffect: 0
+    heightMinStart: 0
+    heightMinEnd: 0
+    heightMaxStart: 1500
+    heightMaxEnd: 1500
+    heightBiasFrequency: 0
+    heightBiasCutoff: 0
+    isInverseHeightBias: 0
+    slopeMinStart: 10
+    slopeMinEnd: 20
+    slopeMaxStart: 55
+    slopeMaxEnd: 60
+    slopeBiasFrequency: 20
+    slopeBiasCutoff: 0.5
+    isInverseSlopeBias: 0
+    snowAmount: 0
+    snowBiasSize: 0
+    snowBiasFrequency: 0
+    snowBiasCutoff: 0
   splatType: 0
   paintMethod: 0
-  paintRules:
-    flowMapWeight: 0
-    convexityMapWeight: 0
-    concavityMapWeight: 0
-    maxHeight: 1500
-    minHeight: 0
-    minHeightBias: 50
-    maxSlope: 60
-    minSlope: 30
-    minSlopeBias: 15
-    biasFrequency: 2
+  flowMapEffect: 0
+  convexityMapEffect: 0
+  concavityMapEffect: 0
+  isInverseHeightBias: 0
+  isInverseSlopeBias: 0
   useFlowMapMask: 0
   useConvexityMapMask: 0
-  useConcavitiyMapMask: 0
+  useConcavityMapMask: 0
+  isInverseFlowMap: 0
+  isInverseConvexityMap: 0
+  isInverseConcavityMap: 0
+  isInverseFlowMapHeightWeight: 0
+  isInverseFlowMapSlopeWeight: 0
