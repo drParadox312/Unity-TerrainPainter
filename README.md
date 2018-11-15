@@ -2,6 +2,9 @@
 
 TerrainPainter
 
+
+Using Asset :
+
 1- Create TerrainPainter_Splat prototype in project panel.
 
 2- Enable drawInstanced at terrain’s inspector settings panel.
