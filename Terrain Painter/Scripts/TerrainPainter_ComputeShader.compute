@@ -268,7 +268,7 @@ float PerlinNoiseValue(uint3 id, float p_frequency)
 
 	float _pos_x =   terrainPosition.x + (  terrainSize.x * (  (float)id.x/ ( (float)terrainHeightMapResolution - 1) )  ) ;
 	float _pos_z =   terrainPosition.z + (  terrainSize.z * (  (float)id.y/ ( (float)terrainHeightMapResolution - 1) )  ) ;
-	float _pos_y =	 terrainPosition.y + (  terrainSize.y * height_slope_snowWeight_water_Maps[id.xy].x  ) ;
+//	float _pos_y =	 terrainPosition.y + (  terrainSize.y * height_slope_snowWeight_water_Maps[id.xy].x  ) ;
 
 	float3 _vector = float3(_pos_x, 0.0, _pos_z) ;
 
