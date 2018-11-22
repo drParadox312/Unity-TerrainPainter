@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using TerrainPainter;
 
+
 [CustomEditor(typeof(TerrainPainter_Manager))]
 public class TerrainPainter_ManagerInspector : Editor
 {
@@ -49,23 +50,18 @@ public class TerrainPainter_ManagerInspector : Editor
                     {
 
                         EditorGUI.BeginChangeCheck();
-                        EditorGUILayout.Separator();
-                        managerScript.maxTerrainHeight = Mathf.Max(1f , EditorGUILayout.DelayedFloatField("Max Terrain Height", managerScript.maxTerrainHeight));
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            managerScript.UpdateTerrainMaxHeight(true);
-                        }
-
-
-                        EditorGUILayout.Separator();
-
-
-                        EditorGUI.BeginChangeCheck();
-                        managerScript.flowMapIteration = Mathf.Clamp(EditorGUILayout.DelayedIntField("Flow Map Iteration Count", managerScript.flowMapIteration), 0, 20);
+                        managerScript.flowMapIteration = Mathf.Clamp(EditorGUILayout.DelayedIntField("Flow Map Iteration Count", managerScript.flowMapIteration), 0, 30);
                         if (EditorGUI.EndChangeCheck())
                         {
                             managerScript.UpdateFlowMap(true);
                         }
+
+                        EditorGUILayout.Separator();
+
+                        EditorGUILayout.BeginHorizontal();
+                        managerScript.blurSplatmap = EditorGUILayout.Toggle("Blur Splatmap", managerScript.blurSplatmap);
+                        EditorGUILayout.Separator();
+                        EditorGUILayout.EndHorizontal();
 
 
                         EditorGUILayout.Separator();
@@ -260,11 +256,9 @@ public class TerrainPainter_ManagerInspector : Editor
                                         managerScript.splats[selected_splat_index].useFlowMapMask = EditorGUILayout.Toggle("Use FlowMap Mask", managerScript.splats[selected_splat_index].useFlowMapMask);
                                         managerScript.splats[selected_splat_index].flowMapEffect = (MapMaskEffect)EditorGUILayout.EnumPopup("FlowMap Effect", managerScript.splats[selected_splat_index].flowMapEffect);
                                         EditorGUILayout.EndHorizontal();
-                                        
-                                        managerScript.splats[selected_splat_index].isInverseFlowMap = EditorGUILayout.Toggle("Use Inverse FlowMap", managerScript.splats[selected_splat_index].isInverseFlowMap);
-                                    
+                                                                            
                                         managerScript.splats[selected_splat_index].paintRules.flowMapWeight = EditorGUILayout.Slider("Flow Map Weight", managerScript.splats[selected_splat_index].paintRules.flowMapWeight, 0f, 1f);
-                                        managerScript.splats[selected_splat_index].paintRules.flowMapBias = EditorGUILayout.Slider("Flow Map Bias", managerScript.splats[selected_splat_index].paintRules.flowMapBias, 0f, 1f);
+                                        managerScript.splats[selected_splat_index].paintRules.flowMapTransition = EditorGUILayout.Slider("Flow Map Transition", managerScript.splats[selected_splat_index].paintRules.flowMapTransition, 0f, 1f);
                                         managerScript.splats[selected_splat_index].paintRules.flowMapScale = EditorGUILayout.Slider("Flow Map Scale", managerScript.splats[selected_splat_index].paintRules.flowMapScale, 1f, 1000f);
                                         EditorGUILayout.Separator();
                                         managerScript.splats[selected_splat_index].paintRules.flowMapHeightWeight = EditorGUILayout.Slider("Flow Map Height Weight", managerScript.splats[selected_splat_index].paintRules.flowMapHeightWeight, 0f, 1f);
@@ -293,10 +287,10 @@ public class TerrainPainter_ManagerInspector : Editor
                                         managerScript.splats[selected_splat_index].convexityMapEffect = (MapMaskEffect)EditorGUILayout.EnumPopup("Convexity Map Effect", managerScript.splats[selected_splat_index].convexityMapEffect);
                                         EditorGUILayout.EndHorizontal();
 
-                                        managerScript.splats[selected_splat_index].isInverseConvexityMap = EditorGUILayout.Toggle("Use Inverse Convexity Map", managerScript.splats[selected_splat_index].isInverseConvexityMap);
                                         managerScript.splats[selected_splat_index].paintRules.convexityMapWeight = EditorGUILayout.Slider("Convexity Map Weight",managerScript.splats[selected_splat_index].paintRules.convexityMapWeight, 0.01f, 1f);
-                                        managerScript.splats[selected_splat_index].paintRules.convexityMapBias = EditorGUILayout.Slider("Convexity Map Weight Bias",managerScript.splats[selected_splat_index].paintRules.convexityMapBias, 0f, 1f);
-                                                                    }
+                                        managerScript.splats[selected_splat_index].paintRules.convexityMapTransition = EditorGUILayout.Slider("Convexity Map Weight Transition",managerScript.splats[selected_splat_index].paintRules.convexityMapTransition, 0.001f, 1f);
+                                        managerScript.splats[selected_splat_index].paintRules.convexityMapScale = EditorGUILayout.Slider("Convexity Map Scale",managerScript.splats[selected_splat_index].paintRules.convexityMapScale, 1f, 1000f);                               
+                                    }
                                     else
                                     {
                                         managerScript.splats[selected_splat_index].useConvexityMapMask = EditorGUILayout.Toggle("Use Convexity Mask", managerScript.splats[selected_splat_index].useConvexityMapMask);
@@ -315,16 +309,87 @@ public class TerrainPainter_ManagerInspector : Editor
                                         managerScript.splats[selected_splat_index].useConcavityMapMask = EditorGUILayout.Toggle("Use Concavity Mask", managerScript.splats[selected_splat_index].useConcavityMapMask);
                                         managerScript.splats[selected_splat_index].concavityMapEffect = (MapMaskEffect)EditorGUILayout.EnumPopup("Concavity Map Effect", managerScript.splats[selected_splat_index].concavityMapEffect);
                                         EditorGUILayout.EndHorizontal();
-
-                                        managerScript.splats[selected_splat_index].isInverseConcavityMap = EditorGUILayout.Toggle("Use Inverse Concavity Map", managerScript.splats[selected_splat_index].isInverseConcavityMap);
                                 
                                         managerScript.splats[selected_splat_index].paintRules.concavityMapWeight = EditorGUILayout.Slider("Concavity Map Weight", managerScript.splats[selected_splat_index].paintRules.concavityMapWeight, 0f, 1f);
-                                        managerScript.splats[selected_splat_index].paintRules.concavityMapBias = EditorGUILayout.Slider("Concavity Map Weight Bias", managerScript.splats[selected_splat_index].paintRules.concavityMapBias, 0f, 1f);
+                                        managerScript.splats[selected_splat_index].paintRules.concavityMapTransition = EditorGUILayout.Slider("Concavity Map Weight Transition", managerScript.splats[selected_splat_index].paintRules.concavityMapTransition, 0.001f, 1f);
+                                        managerScript.splats[selected_splat_index].paintRules.concavityMapScale = EditorGUILayout.Slider("Concavity Map Scale",managerScript.splats[selected_splat_index].paintRules.concavityMapScale, 1f, 1000f); 
                                     }
                                     else
                                     {
                                         managerScript.splats[selected_splat_index].useConcavityMapMask = EditorGUILayout.Toggle("Use Concavity Mask", managerScript.splats[selected_splat_index].useConcavityMapMask);
                                     }
+                                    
+
+
+
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+
+                                    if (managerScript.splats[selected_splat_index].useAspectMap)
+                                    {
+                                        EditorGUILayout.BeginHorizontal();
+                                        managerScript.splats[selected_splat_index].useAspectMap = EditorGUILayout.Toggle("Use Aspect Mask", managerScript.splats[selected_splat_index].useAspectMap);
+                                        managerScript.splats[selected_splat_index].aspectMapEffect = (MapMaskEffect)EditorGUILayout.EnumPopup("Aspect Map Effect", managerScript.splats[selected_splat_index].aspectMapEffect);
+                                        EditorGUILayout.EndHorizontal();
+                                
+                                        managerScript.splats[selected_splat_index].paintRules.aspectMapWeight = EditorGUILayout.Slider("Aspect Map Weight", managerScript.splats[selected_splat_index].paintRules.aspectMapWeight, 0f, 1f);
+                                        managerScript.splats[selected_splat_index].paintRules.aspectMapPower = EditorGUILayout.Slider("Aspect Map Power", managerScript.splats[selected_splat_index].paintRules.aspectMapPower, 1f, 10f);
+                                        managerScript.splats[selected_splat_index].paintRules.aspectMapDirection = EditorGUILayout.Slider("Aspect Map Direction", managerScript.splats[selected_splat_index].paintRules.aspectMapDirection, 0f, 360f);
+                                    }
+                                    else
+                                    {
+                                        managerScript.splats[selected_splat_index].useAspectMap = EditorGUILayout.Toggle("Use Aspect Mask", managerScript.splats[selected_splat_index].useAspectMap);
+                                    }
+
+
+
+
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.Separator();
+                                    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+                                    if (managerScript.splats[selected_splat_index].useTextureMap)
+                                    {
+                                        EditorGUILayout.BeginHorizontal();
+                                        managerScript.splats[selected_splat_index].useTextureMap = EditorGUILayout.Toggle("Use Texture Mask", managerScript.splats[selected_splat_index].useTextureMap);
+                                        managerScript.splats[selected_splat_index].textureMapEffect = (MapMaskEffect)EditorGUILayout.EnumPopup("Texture Map Effect", managerScript.splats[selected_splat_index].textureMapEffect);
+                                        EditorGUILayout.EndHorizontal();
+                                
+                                        managerScript.splats[selected_splat_index].paintRules.textureMapWeight = EditorGUILayout.Slider("Texture Map Weight", managerScript.splats[selected_splat_index].paintRules.textureMapWeight, 0f, 1f);
+                                        
+                                        EditorGUILayout.BeginHorizontal();
+                                        Texture _newTextureMap = (Texture)EditorGUILayout.ObjectField("Texture and Channel",managerScript.splats[selected_splat_index].textureMap, typeof(Texture));
+                                        if(_newTextureMap)
+                                        {
+                                            if(_newTextureMap.isReadable == false)
+                                            {
+                                                Debug.LogError("Texture Mask must be imported as isReadable. Texture : " + managerScript.splats[selected_splat_index].textureMap);
+                                            }
+                                            else
+                                            {
+                                                managerScript.splats[selected_splat_index].textureMap = _newTextureMap ;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            managerScript.splats[selected_splat_index].textureMap = null ;
+                                        }
+                                        managerScript.splats[selected_splat_index].textureMapChannel = (TextureMapChannel)EditorGUILayout.EnumPopup(managerScript.splats[selected_splat_index].textureMapChannel);
+                                        EditorGUILayout.EndHorizontal();
+                                    }
+                                    else
+                                    {
+                                        managerScript.splats[selected_splat_index].useTextureMap = EditorGUILayout.Toggle("Use Texture Mask", managerScript.splats[selected_splat_index].useTextureMap);
+                                    }
+
+
+
+
+
 
                                     EditorGUILayout.Separator();
                                 }
@@ -343,9 +408,9 @@ public class TerrainPainter_ManagerInspector : Editor
                                     EditorGUILayout.Separator();
 
                                     managerScript.splats[selected_splat_index].paintRules.snowAmount = EditorGUILayout.Slider("Snow Amount", managerScript.splats[selected_splat_index].paintRules.snowAmount, 0f, 1f);
-                                    managerScript.splats[selected_splat_index].paintRules.snowBiasSize = EditorGUILayout.Slider("Snow Bias Size", managerScript.splats[selected_splat_index].paintRules.snowBiasSize, 0f, 0.1f);
-                                    managerScript.splats[selected_splat_index].paintRules.snowBiasFrequency = EditorGUILayout.Slider("Snow Bias Ferquency", managerScript.splats[selected_splat_index].paintRules.snowBiasFrequency, 0f, 20f);
-                                    managerScript.splats[selected_splat_index].paintRules.snowBiasCutoff = EditorGUILayout.Slider("Snow Bias Cutoff", managerScript.splats[selected_splat_index].paintRules.snowBiasCutoff, 0f, 1f);
+                                    managerScript.splats[selected_splat_index].paintRules.snowTransitionSize = EditorGUILayout.Slider("Snow Transition Size", managerScript.splats[selected_splat_index].paintRules.snowTransitionSize, 0f, 0.1f);
+                                    managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency = EditorGUILayout.Slider("Snow Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.snowTransitionCutoff = EditorGUILayout.Slider("Snow Transition Cutoff", managerScript.splats[selected_splat_index].paintRules.snowTransitionCutoff, 0f, 1f);
 
                                 }
                                 else if(managerScript.splats[selected_splat_index].splatType == SplatType.Default)
@@ -380,17 +445,12 @@ public class TerrainPainter_ManagerInspector : Editor
                                     EditorGUILayout.EndHorizontal();
                                     
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.heightBiasFrequency = EditorGUILayout.Slider("Height Bias Ferquency", managerScript.splats[selected_splat_index].paintRules.heightBiasFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency = EditorGUILayout.Slider("Height Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency, 0f, 20f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.heightBiasCutoff = EditorGUILayout.Slider("Height Bias Cutoff", managerScript.splats[selected_splat_index].paintRules.heightBiasCutoff, 0f, 1f);
-                                    EditorGUILayout.Separator();
-                                    EditorGUILayout.EndHorizontal();
-
-                                    EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].isInverseHeightBias = EditorGUILayout.Toggle("Use Inverse Height Bias", managerScript.splats[selected_splat_index].isInverseHeightBias) ;
+                                    managerScript.splats[selected_splat_index].paintRules.heightTransitionCutoff = EditorGUILayout.Slider("Height Transition Cutoff", managerScript.splats[selected_splat_index].paintRules.heightTransitionCutoff, 0f, 1f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 
@@ -432,17 +492,12 @@ public class TerrainPainter_ManagerInspector : Editor
                                     EditorGUILayout.EndHorizontal();
 
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.slopeBiasFrequency = EditorGUILayout.Slider("Slope Bias Ferquency", managerScript.splats[selected_splat_index].paintRules.slopeBiasFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency = EditorGUILayout.Slider("Slope Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency, 0f, 20f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.slopeBiasCutoff = EditorGUILayout.Slider("Slope Bias Cutoff", managerScript.splats[selected_splat_index].paintRules.slopeBiasCutoff, 0f, 1f);
-                                    EditorGUILayout.Separator();
-                                    EditorGUILayout.EndHorizontal();
-
-                                    EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].isInverseSlopeBias = EditorGUILayout.Toggle("Use Inverse Slope Bias", managerScript.splats[selected_splat_index].isInverseSlopeBias) ;
+                                    managerScript.splats[selected_splat_index].paintRules.slopeTransitionCutoff = EditorGUILayout.Slider("Slope Transition Cutoff", managerScript.splats[selected_splat_index].paintRules.slopeTransitionCutoff, 0f, 1f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 

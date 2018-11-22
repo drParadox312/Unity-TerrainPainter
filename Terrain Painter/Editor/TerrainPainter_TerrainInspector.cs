@@ -23,20 +23,18 @@ public class TerrainPainter_TerrainInspector : Editor
         {
             if (terrainScript.manager.isInitialized)
             {
-                for(int i=0; i<terrainScript.splatMapsArray.Length; i++)
-                {
-                    EditorGUILayout.ObjectField("Splatmap " + i + " ", terrainScript.splatMapsArray[i], typeof(RenderTexture));
-                }
-                EditorGUILayout.ObjectField("Unity heightmap", terrainScript.renderTexture_unity_heightMap, typeof(RenderTexture));
-                EditorGUILayout.ObjectField("Height, Slope, SnowWeight maps", terrainScript.renderTexture_height_slope_snowWeight_water_Maps, typeof(RenderTexture));
-                EditorGUILayout.ObjectField("Neighbor terrrains heightmaps", terrainScript.renderTexture_neighbor_terrain_heightMaps, typeof(RenderTexture));
-                EditorGUILayout.ObjectField("Neighbor terrrains slopemaps", terrainScript.renderTexture_neighbor_terrain_slopeMaps, typeof(RenderTexture));
-                EditorGUILayout.ObjectField("Convexity, Concavitiy, Flow maps", terrainScript.renderTexture_convexity_concavitiy_flow_Maps, typeof(RenderTexture));
+                EditorGUILayout.HelpBox("Keep opened this inpector for heightmap update.", MessageType.Info);
+                EditorGUILayout.ObjectField("", terrainScript.renderTexture_unity_normalMap, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("", terrainScript.renderTexture_convexity_concavitiy_flow_Maps, typeof(RenderTexture));
             }
             else
             {
-                EditorGUILayout.LabelField("TerrainPainter Manager not initialized");
+                EditorGUILayout.LabelField("TerrainPainter_Manager not initialized.");
             }
+        }
+        else
+        {
+             EditorGUILayout.LabelField("TerrainPainter_Manager not assigned.");
         }
     }
 

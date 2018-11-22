@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44858867, g: 0.49864125, b: 0.5756639, a: 1}
+  m_IndirectSpecularColor: {r: 0.44836468, g: 0.49447232, b: 0.5545312, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -71,7 +71,7 @@ LightmapSettings:
     m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
-    m_BakeBackend: 2
+    m_BakeBackend: 1
     m_PVRSampling: 1
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 256
@@ -113,7 +113,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!84 &2735091
+--- !u!84 &87739556
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,78 +207,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170076733}
-  m_LocalRotation: {x: 0.27001774, y: 0.6413855, z: -0.2584857, w: 0.67000014}
+  m_LocalRotation: {x: 0.31366107, y: 0.8063202, z: 0.0016410862, w: 0.5014598}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 43.9, y: 87.5, z: 0}
---- !u!84 &378082275
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 513
-  m_Height: 513
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 10
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &422993124
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 513
-  m_Height: 513
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 10
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &444588162
+  m_LocalEulerAnglesHint: {x: 18.176, y: 121.545006, z: 32.284}
+--- !u!84 &210323867
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,7 +293,7 @@ Terrain:
   m_DetailObjectDistance: 80
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
+  m_SplatMapDistance: 2000
   m_HeightmapMaximumLOD: 0
   m_CastShadows: 1
   m_DrawHeightmap: 1
@@ -407,38 +343,44 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: f797496a9a862fe4fa1b46d8f81da62d, type: 3}
   manager: {fileID: 1766804518}
   terrainIndex: 0
-  renderTexture_unity_heightMap: {fileID: 1647030281}
-  renderTexture_unity_normalMap: {fileID: 1895832057}
-  renderTexture_neighbor_terrain_heightMaps: {fileID: 1625780505}
-  renderTexture_neighbor_terrain_slopeMaps: {fileID: 1444118793}
-  renderTexture_waterMap_left: {fileID: 2735091}
-  renderTexture_waterMap_up: {fileID: 444588162}
-  renderTexture_waterMap_right: {fileID: 1599153513}
-  renderTexture_waterMap_down: {fileID: 1100533410}
-  renderTexture_neighbor_terrain_waterMaps: {fileID: 775523481}
-  renderTexture_waterOutMap_this: {fileID: 1746842374}
-  renderTexture_waterOutMap_left: {fileID: 378082275}
-  renderTexture_waterOutMap_up: {fileID: 1414399584}
-  renderTexture_waterOutMap_right: {fileID: 1024739335}
-  renderTexture_waterOutMap_down: {fileID: 422993124}
-  renderTexture_height_slope_snowWeight_water_Maps: {fileID: 1985890384}
-  renderTexture_convexity_concavitiy_flow_Maps: {fileID: 1125646539}
+  neighbor_terrains_scripts:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  renderTexture_unity_heightMap: {fileID: 1223616037}
+  renderTexture_unity_normalMap: {fileID: 556992762}
+  renderTexture_neighbor_terrain_heightMaps: {fileID: 210323867}
+  renderTexture_neighbor_terrain_slopeMaps: {fileID: 758509577}
+  renderTexture_waterMap_left: {fileID: 1896616529}
+  renderTexture_waterMap_up: {fileID: 751402208}
+  renderTexture_waterMap_right: {fileID: 1910932987}
+  renderTexture_waterMap_down: {fileID: 1552163760}
+  renderTexture_neighbor_terrain_waterMaps: {fileID: 1653694926}
+  renderTexture_waterOutMap_this: {fileID: 1489913161}
+  renderTexture_waterOutMap_left: {fileID: 1862161542}
+  renderTexture_waterOutMap_up: {fileID: 1140371768}
+  renderTexture_waterOutMap_right: {fileID: 1204217832}
+  renderTexture_waterOutMap_down: {fileID: 87739556}
+  renderTexture_height_slope_snowWeight_water_Maps: {fileID: 1320018363}
+  renderTexture_convexity_concavitiy_flow_Maps: {fileID: 2130939267}
+  renderTexture_convexity_concavitiy_flow_Maps_newCurvature: {fileID: 717904033}
   extraThread: 8
   hm_x: 513
   hm_y: 513
   terrainSize: {x: 4000, y: 1500, z: 4000, w: 0}
   terrainPosition: {x: 0, y: 0, z: 0, w: 0}
-  terrainHeightMapResolution: 513
+  heightmapResolution: 513
   alphamapResolution: 512
   am_x: 512
   am_y: 512
   hasNeighborTerrains: {x: -1, y: -1, z: -1, w: -1}
-  cornerNeighborTerrainsHeights: {x: 447.17084, y: 2.2431788, z: 15.702252, w: 0}
-  cornerNeighborTerrainsSlopes: {x: 26.062368, y: 84.55887, z: 81.51644, w: 74.82059}
+  cornerNeighborTerrainsHeights: {x: 440.57864, y: 2.2431788, z: 120.58231, w: 56.491486}
+  cornerNeighborTerrainsSlopes: {x: 53.07858, y: 84.55106, z: 81.409546, w: 73.94869}
   splatMapsArray:
-  - {fileID: 1138322571}
-  - {fileID: 1948341692}
-  flowMapIteration: 10
+  - {fileID: 1342986295}
+  - {fileID: 1249329632}
+  flowMapIteration: 20
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,7 +463,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 7.0860004, y: 30.769001, z: 0}
---- !u!84 &775523481
+--- !u!84 &556992762
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 8
+  m_MipMap: 1
+  m_GenerateMips: 0
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &717904033
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -553,7 +527,7 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1024739335
+--- !u!84 &751402208
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -585,7 +559,7 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1100533410
+--- !u!84 &758509577
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -617,7 +591,7 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1125646539
+--- !u!84 &1140371768
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -649,39 +623,7 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1138322571
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 512
-  m_Height: 512
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 0
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &1414399584
+--- !u!84 &1204217832
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -713,103 +655,7 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1444118793
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 513
-  m_Height: 513
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 10
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &1599153513
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 513
-  m_Height: 513
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 10
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &1625780505
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 513
-  m_Height: 513
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 10
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &1647030281
+--- !u!84 &1223616037
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -841,7 +687,167 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1746842374
+--- !u!84 &1249329632
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 512
+  m_Height: 512
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 0
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1320018363
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 10
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1342986295
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 512
+  m_Height: 512
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 0
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1489913161
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 10
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1552163760
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 10
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1653694926
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -908,7 +914,7 @@ MonoBehaviour:
   - {fileID: 458794049}
   terrainScripts:
   - {fileID: 458794051}
-  isInitialized: 0
+  isInitialized: 1
   checkForNewTerrainsOnEnable: 1
   autoUpdate: 1
   autoUpdateFlowMap: 0
@@ -932,203 +938,239 @@ MonoBehaviour:
     useFlowMap: 1
     useConvexityMap: -1
     useConcavityMap: -1
-    isInverseFlowMap: -1
-    isInverseConvexityMap: -1
-    isInverseConcavityMap: -1
-    flowMapWeight: 0.7
+    useAspectMap: -1
+    useTextureMap: -1
+    flowMapWeight: 0.8
+    flowMapTransition: 0.5
     flowMapScale: 750
-    flowMapBias: 0.3
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: -1
-    flowMapSlopeWeight: 0
-    isInverseFlowMapSlopeWeight: -1
+    flowMapSlopeWeight: 0.75
+    isInverseFlowMapSlopeWeight: 1
     flowMapEffect: 0
-    convexityMapWeight: 0.01
-    convexityMapBias: 1
-    convexityMapEffect: 1
-    concavityMapWeight: 0.586
-    concavityMapBias: 1
-    concavityMapEffect: 1
-    heightMinStart: 0
-    heightMinEnd: 0
+    convexityMapWeight: 0.7
+    convexityMapTransition: 0.4
+    convexityMapScale: 600
+    convexityMapEffect: 0
+    concavityMapWeight: 0.7
+    concavityMapTransition: 0.4
+    concavityMapScale: 600
+    concavityMapEffect: 0
+    aspectMapWeight: 1
+    aspectMapPower: 1
+    aspectMapDirection: 0
+    aspectMapEffect: 2
+    textureMapWeight: 1
+    textureMapChannel: 1
+    textureMapResolution: 512
+    textureMapEffect: 0
+    heightMinStart: 664.85016
+    heightMinEnd: 762.9428
     heightMaxStart: 1500
     heightMaxEnd: 1500
-    heightBiasFrequency: 10
-    heightBiasCutoff: 0
-    isInverseHeightBias: -1
-    slopeMinStart: 30
-    slopeMinEnd: 30
+    heightTransitionFrequency: 10
+    heightTransitionCutoff: 0
+    slopeMinStart: 0
+    slopeMinEnd: 0
     slopeMaxStart: 60
-    slopeMaxEnd: 60
-    slopeBiasFrequency: 10
-    slopeBiasCutoff: 0
-    isInverseSlopeBias: -1
-    snowAmount: 0.671
-    snowBiasSize: 0.1
-    snowBiasFrequency: 15
-    snowBiasCutoff: 0.25
+    slopeMaxEnd: 70
+    slopeTransitionFrequency: 10
+    slopeTransitionCutoff: 0
+    snowAmount: 0.9
+    snowTransitionSize: 0.1
+    snowTransitionFrequency: 15
+    snowTransitionCutoff: 0.1
   - splatType: 0
     paintMethod: 0
     useFlowMap: -1
     useConvexityMap: -1
     useConcavityMap: -1
-    isInverseFlowMap: -1
-    isInverseConvexityMap: -1
-    isInverseConcavityMap: -1
-    flowMapWeight: 0
-    flowMapScale: 1
-    flowMapBias: 0
+    useAspectMap: -1
+    useTextureMap: -1
+    flowMapWeight: 0.75
+    flowMapTransition: 0
+    flowMapScale: 1000
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: -1
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: -1
     flowMapEffect: 0
     convexityMapWeight: 0.01
-    convexityMapBias: 0
+    convexityMapTransition: 0
+    convexityMapScale: 0
     convexityMapEffect: 0
     concavityMapWeight: 0
-    concavityMapBias: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
     concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 1500
     heightMaxEnd: 1500
-    heightBiasFrequency: 0
-    heightBiasCutoff: 0
-    isInverseHeightBias: -1
-    slopeMinStart: 20
-    slopeMinEnd: 30
+    heightTransitionFrequency: 0
+    heightTransitionCutoff: 0
+    slopeMinStart: 30
+    slopeMinEnd: 45
     slopeMaxStart: 90
     slopeMaxEnd: 90
-    slopeBiasFrequency: 10
-    slopeBiasCutoff: 0.9
-    isInverseSlopeBias: -1
+    slopeTransitionFrequency: 10
+    slopeTransitionCutoff: 0.5
     snowAmount: 0
-    snowBiasSize: 0
-    snowBiasFrequency: 0
-    snowBiasCutoff: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
   - splatType: 0
     paintMethod: 0
     useFlowMap: -1
     useConvexityMap: -1
     useConcavityMap: -1
-    isInverseFlowMap: -1
-    isInverseConvexityMap: -1
-    isInverseConcavityMap: -1
+    useAspectMap: -1
+    useTextureMap: -1
     flowMapWeight: 0
+    flowMapTransition: 0
     flowMapScale: 0
-    flowMapBias: 0
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: -1
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: -1
     flowMapEffect: 0
     convexityMapWeight: 0
-    convexityMapBias: 0
+    convexityMapTransition: 0
+    convexityMapScale: 0
     convexityMapEffect: 0
     concavityMapWeight: 0
-    concavityMapBias: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
     concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 1500
     heightMaxEnd: 1500
-    heightBiasFrequency: 0
-    heightBiasCutoff: 0
-    isInverseHeightBias: -1
-    slopeMinStart: 10
-    slopeMinEnd: 20
-    slopeMaxStart: 55
-    slopeMaxEnd: 60
-    slopeBiasFrequency: 20
-    slopeBiasCutoff: 0.5
-    isInverseSlopeBias: -1
+    heightTransitionFrequency: 0
+    heightTransitionCutoff: 0
+    slopeMinStart: 20
+    slopeMinEnd: 30
+    slopeMaxStart: 45
+    slopeMaxEnd: 50
+    slopeTransitionFrequency: 10
+    slopeTransitionCutoff: 0.5
     snowAmount: 0
-    snowBiasSize: 0
-    snowBiasFrequency: 0
-    snowBiasCutoff: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
   - splatType: 0
     paintMethod: 0
     useFlowMap: -1
     useConvexityMap: -1
     useConcavityMap: -1
-    isInverseFlowMap: -1
-    isInverseConvexityMap: -1
-    isInverseConcavityMap: -1
+    useAspectMap: -1
+    useTextureMap: -1
     flowMapWeight: 0
+    flowMapTransition: 0
     flowMapScale: 1
-    flowMapBias: 0
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: -1
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: -1
     flowMapEffect: 0
     convexityMapWeight: 0.01
-    convexityMapBias: 0
+    convexityMapTransition: 0
+    convexityMapScale: 0
     convexityMapEffect: 0
     concavityMapWeight: 0
-    concavityMapBias: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
     concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 100
-    heightMaxEnd: 200
-    heightBiasFrequency: 20
-    heightBiasCutoff: 0.5
-    isInverseHeightBias: -1
+    heightMaxEnd: 300
+    heightTransitionFrequency: 1
+    heightTransitionCutoff: 0.2
     slopeMinStart: 0
     slopeMinEnd: 0
     slopeMaxStart: 5
-    slopeMaxEnd: 15
-    slopeBiasFrequency: 0
-    slopeBiasCutoff: 0
-    isInverseSlopeBias: -1
+    slopeMaxEnd: 20
+    slopeTransitionFrequency: 20
+    slopeTransitionCutoff: 0
     snowAmount: 0
-    snowBiasSize: 0
-    snowBiasFrequency: 0
-    snowBiasCutoff: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
   - splatType: 1
     paintMethod: 0
     useFlowMap: -1
     useConvexityMap: -1
     useConcavityMap: -1
-    isInverseFlowMap: -1
-    isInverseConvexityMap: -1
-    isInverseConcavityMap: -1
+    useAspectMap: -1
+    useTextureMap: -1
     flowMapWeight: 0
+    flowMapTransition: 0
     flowMapScale: 1
-    flowMapBias: 0
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: -1
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: -1
     flowMapEffect: 0
     convexityMapWeight: 0
-    convexityMapBias: 0
+    convexityMapTransition: 0
+    convexityMapScale: 0
     convexityMapEffect: 0
     concavityMapWeight: 0
-    concavityMapBias: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
     concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 0
     heightMaxEnd: 0
-    heightBiasFrequency: 0
-    heightBiasCutoff: 0
-    isInverseHeightBias: -1
+    heightTransitionFrequency: 0
+    heightTransitionCutoff: 0
     slopeMinStart: 0
     slopeMinEnd: 0
     slopeMaxStart: 0
     slopeMaxEnd: 0
-    slopeBiasFrequency: 0
-    slopeBiasCutoff: 0
-    isInverseSlopeBias: -1
+    slopeTransitionFrequency: 0
+    slopeTransitionCutoff: 0
     snowAmount: 0
-    snowBiasSize: 0
-    snowBiasFrequency: 0
-    snowBiasCutoff: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
+  blurSplatmap: 1
   maxTerrainHeight: 1500
-  flowMapIteration: 10
+  flowMapIteration: 20
 --- !u!4 &1766804519
 Transform:
   m_ObjectHideFlags: 0
@@ -1143,7 +1185,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &1895832057
+--- !u!84 &1862161542
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1159,39 +1201,7 @@ RenderTexture:
   m_Height: 513
   m_AntiAliasing: 1
   m_DepthFormat: 0
-  m_ColorFormat: 8
-  m_MipMap: 1
-  m_GenerateMips: 0
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
---- !u!84 &1948341692
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 512
-  m_Height: 512
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 0
+  m_ColorFormat: 10
   m_MipMap: 0
   m_GenerateMips: 1
   m_SRGB: 0
@@ -1207,7 +1217,71 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
---- !u!84 &1985890384
+--- !u!84 &1896616529
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 10
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &1910932987
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 513
+  m_Height: 513
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 10
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+--- !u!84 &2130939267
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

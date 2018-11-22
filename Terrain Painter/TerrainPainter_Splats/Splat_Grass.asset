@@ -21,47 +21,61 @@ MonoBehaviour:
     useFlowMap: 0
     useConvexityMap: 0
     useConcavityMap: 0
-    isInverseFlowMap: 0
-    isInverseConvexityMap: 0
-    isInverseConcavityMap: 0
+    useAspectMap: 0
+    useTextureMap: 0
     flowMapWeight: 0
+    flowMapTransition: 0
     flowMapScale: 1
-    flowMapBias: 0
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: 0
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: 0
+    flowMapEffect: 0
     convexityMapWeight: 0
-    convexityMapBias: 0
+    convexityMapTransition: 0
+    convexityMapScale: 0
+    convexityMapEffect: 0
     concavityMapWeight: 0
-    concavityMapBias: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
+    concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 0
     heightMaxEnd: 0
-    heightBiasFrequency: 0
-    heightBiasCutoff: 0
-    isInverseHeightBias: 0
+    heightTransitionFrequency: 0
+    heightTransitionCutoff: 0
     slopeMinStart: 0
     slopeMinEnd: 0
     slopeMaxStart: 0
     slopeMaxEnd: 0
-    slopeBiasFrequency: 0
-    slopeBiasCutoff: 0
-    isInverseSlopeBias: 0
+    slopeTransitionFrequency: 0
+    slopeTransitionCutoff: 0
     snowAmount: 0
-    snowBiasSize: 0
-    snowBiasFrequency: 0
-    snowBiasCutoff: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
   splatType: 1
   paintMethod: 0
-  isInverseHeightBias: 0
-  isInverseSlopeBias: 0
+  flowMapEffect: 0
+  convexityMapEffect: 0
+  concavityMapEffect: 0
+  aspectMapEffect: 0
+  textureMapEffect: 0
   useFlowMapMask: 0
   useConvexityMapMask: 0
   useConcavityMapMask: 0
-  isInverseFlowMap: 0
-  isInverseConvexityMap: 0
-  isInverseConcavityMap: 0
+  useAspectMap: 0
+  useTextureMap: 0
   isInverseFlowMapHeightWeight: 0
   isInverseFlowMapSlopeWeight: 0
+  textureMap: {fileID: 0}
+  textureMapChannel: 0

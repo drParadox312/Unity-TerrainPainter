@@ -26,6 +26,8 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public SplatPaintRules[] splatPaintRulesArray;
 
+    public bool blurSplatmap = true ;
+
     public float maxTerrainHeight = 3000f ;
 
     public int flowMapIteration = 10;
@@ -85,8 +87,6 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void FindTerrains()
     {
-        
-
         if (computeShader == null)
             return;
 
@@ -95,22 +95,17 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         int _hmR = terrains[0].terrainData.heightmapResolution;
         int _amR = terrains[0].terrainData.alphamapResolution;
+        Vector3 _size = terrains[0].terrainData.size ;
 
         for(int i=0 ; i< terrains.Length; i++)
         {
             if(i > 0)
             {
-                if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution)
+                if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution ||  _size != terrains[i].terrainData.size)
                 {
                     Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.") ;
                     return ;
                 }
-            }
-
-            if(terrains[i].drawInstanced == false)
-            {
-                Debug.LogError("Enable drawInstanced toggle on terrain's settings tab.") ;
-                return ;
             }
         }
 
@@ -128,6 +123,14 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         if (terrains.Length == 0)
             return;
+
+
+
+        if(terrains[0].drawInstanced)
+            computeShader.SetFloat(NameIDs.useDrawInstanced, 1f);
+        else
+            computeShader.SetFloat(NameIDs.useDrawInstanced, -1f);
+
 
 
         maxTerrainHeight = terrains[0].terrainData.size.y;
@@ -265,23 +268,6 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-
-    public void UpdateTerrainMaxHeight(bool p_atInitialize = false)
-    {
-        for (int i = 0; i < terrains.Length; i++)
-        {
-            terrains[i].terrainData.size = new Vector3(terrains[i].terrainData.size.x, maxTerrainHeight, terrains[i].terrainData.size.z);
-        }
-
-        UpdateTerrains();
-    }
-
-
-
-
-
-
-
     public void UpdateSplats(bool p_atInitialize = false)
     {
         if (isUpdating == true)
@@ -314,6 +300,18 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
+    public void UpdateSplatmapBlur()
+    {
+        for (int i = 0; i< terrainScripts.Length; i++)
+        {
+            terrainScripts[i].BlurSplatmap();
+        }
+    }
+
+
+
+
+
 
     void UpdateSplatPaintRulesArray()
     {
@@ -324,21 +322,34 @@ public class TerrainPainter_Manager : MonoBehaviour
             splatPaintRulesArray[i] = splats[i].paintRules;
             splatPaintRulesArray[i].splatType =  (float)splats[i].splatType ;
             splatPaintRulesArray[i].paintMethod =  (float)splats[i].paintMethod ;
-            splatPaintRulesArray[i].isInverseHeightBias =  splats[i].isInverseHeightBias == true ?  1f : -1f;
-            splatPaintRulesArray[i].isInverseSlopeBias =  splats[i].isInverseSlopeBias == true ?  1f : -1f;
             splatPaintRulesArray[i].useFlowMap =  splats[i].useFlowMapMask == true ?  1f : -1f;
             splatPaintRulesArray[i].useConvexityMap =  splats[i].useConvexityMapMask == true ?  1f : -1f;
             splatPaintRulesArray[i].useConcavityMap =  splats[i].useConcavityMapMask == true ?  1f : -1f;
-            splatPaintRulesArray[i].isInverseFlowMap =  splats[i].isInverseFlowMap == true ?  1f : -1f;
-            splatPaintRulesArray[i].isInverseConvexityMap =  splats[i].isInverseConvexityMap == true ?  1f : -1f;
-            splatPaintRulesArray[i].isInverseConcavityMap =  splats[i].isInverseConcavityMap == true ?  1f : -1f;
+            splatPaintRulesArray[i].useAspectMap =  splats[i].useAspectMap == true ?  1f : -1f;
+            splatPaintRulesArray[i].useTextureMap =  splats[i].useTextureMap == true ?  1f : -1f;
             splatPaintRulesArray[i].isInverseFlowMapHeightWeight =  splats[i].isInverseFlowMapHeightWeight == true ?  1f : -1f;
             splatPaintRulesArray[i].isInverseFlowMapSlopeWeight =  splats[i].isInverseFlowMapSlopeWeight == true ?  1f : -1f;
             splatPaintRulesArray[i].flowMapEffect =  (float)splats[i].flowMapEffect ;
             splatPaintRulesArray[i].convexityMapEffect =  (float)splats[i].convexityMapEffect ;
             splatPaintRulesArray[i].concavityMapEffect =  (float)splats[i].concavityMapEffect ;
+            splatPaintRulesArray[i].aspectMapEffect =  (float)splats[i].aspectMapEffect ;
+            splatPaintRulesArray[i].textureMapEffect =  (float)splats[i].textureMapEffect ;
+            splatPaintRulesArray[i].textureMapChannel =  (float)splats[i].textureMapChannel ;
+
+            if(splats[i].textureMap)
+            {
+                if(splats[i].textureMap.isReadable == false)
+                    Debug.LogError("Texture Mask must be imported as isReadable. Texture : " + splats[i].textureMap);
+                else
+                    splatPaintRulesArray[i].textureMapResolution =  splats[i].textureMap.width ;
+            }
+
+                
         }
     }
+
+
+
 
 
 
@@ -441,6 +452,18 @@ public class TerrainPainter_Manager : MonoBehaviour
         for (int i = 0; i < terrainScripts.Length; i++)
         {
             if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].CurvatureMap_FirstPass();
+        }
+
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].CurvatureMap_SecondPass();
+        }
+
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
                 terrainScripts[i].CurvatureMap_Generate();
         }
     }
@@ -477,11 +500,25 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void AddNewSplat(TerrainPainter_Splat p_newSplat)
     {
+        if(p_newSplat.terrainLayer == null)
+            return ;
+            
+        if(p_newSplat.terrainLayer.diffuseTexture == null)
+            return ;
+
         for (int i = 0; i < splats.Length; i++)
         {
             if (splats[i] == p_newSplat)
                 return;
         }
+
+        if(p_newSplat.useTextureMap)
+            if(p_newSplat.textureMap == null || (p_newSplat.textureMap && p_newSplat.textureMap.isReadable == false))
+            {
+                Debug.LogError("Texture Mask must be imported as isReadable. Texture : " + p_newSplat.textureMap);
+                return ;
+            }
+                
 
         
         TerrainPainter_Splat[] _newSplats = new TerrainPainter_Splat[splats.Length + 1];
@@ -492,7 +529,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         splats = _newSplats;
    
 
-        UpdateSplats();
+        UpdateSplats(true);
     }
 
     public void RemoveSplat(int p_index)
@@ -510,7 +547,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         }
         splats = _newSplats;
 
-        UpdateSplats();
+        UpdateSplats(true);
     }
 
     public void ChangeSplat(int p_index, TerrainPainter_Splat p_newSplat)
@@ -523,7 +560,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         splats[p_index] = p_newSplat;
 
-        UpdateSplats();
+        UpdateSplats(true);
     }
 
     public void MoveUpSplat(int p_index)
@@ -536,7 +573,7 @@ public class TerrainPainter_Manager : MonoBehaviour
             splats[p_index] = _previusElement;
         }
 
-        UpdateSplats();
+        UpdateSplats(true);
     }
 
     public void MoveDownSplat(int p_index)
@@ -549,7 +586,7 @@ public class TerrainPainter_Manager : MonoBehaviour
             splats[p_index + 1] = _indexedElement;
         }
 
-        UpdateSplats();
+        UpdateSplats(true);
     }
 
 

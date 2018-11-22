@@ -6,15 +6,15 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Snow
-  m_DiffuseTexture: {fileID: 2800000, guid: b7092d265f1c00b4b8bf7ea1bd136ced, type: 3}
-  m_NormalMapTexture: {fileID: 2800000, guid: 9720ef855a00c85419a04f306f578b8a, type: 3}
+  m_Name: Rocky Dirt
+  m_DiffuseTexture: {fileID: 2800000, guid: 095f887fb0e5dfc4f9b55cda95bf63d6, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: a12e04641277f3841a1e5b160c768f99, type: 3}
   m_MaskMapTexture: {fileID: 0}
-  m_TileSize: {x: 250, y: 250}
+  m_TileSize: {x: 125, y: 125}
   m_TileOffset: {x: 0, y: 0}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
-  m_Metallic: 0.02
-  m_Smoothness: 0.517
+  m_Metallic: 0.032
+  m_Smoothness: 0.076
   m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}

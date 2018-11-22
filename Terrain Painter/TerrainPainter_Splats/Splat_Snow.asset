@@ -21,53 +21,61 @@ MonoBehaviour:
     useFlowMap: 0
     useConvexityMap: 0
     useConcavityMap: 0
-    isInverseFlowMap: 0
-    isInverseConvexityMap: 0
-    isInverseConcavityMap: 0
-    flowMapWeight: 0.7
+    useAspectMap: 0
+    useTextureMap: 0
+    flowMapWeight: 0.8
+    flowMapTransition: 0.5
     flowMapScale: 750
-    flowMapBias: 0.3
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: 0
-    flowMapSlopeWeight: 0
+    flowMapSlopeWeight: 0.75
     isInverseFlowMapSlopeWeight: 1
     flowMapEffect: 0
-    convexityMapWeight: 0.01
-    convexityMapBias: 1
+    convexityMapWeight: 0.7
+    convexityMapTransition: 0.4
+    convexityMapScale: 600
     convexityMapEffect: 0
-    concavityMapWeight: 0.586
-    concavityMapBias: 1
+    concavityMapWeight: 0.7
+    concavityMapTransition: 0.4
+    concavityMapScale: 600
     concavityMapEffect: 0
-    heightMinStart: 0
-    heightMinEnd: 0
+    aspectMapWeight: 1
+    aspectMapPower: 1
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 1
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
+    heightMinStart: 664.85016
+    heightMinEnd: 762.9428
     heightMaxStart: 1500
     heightMaxEnd: 1500
-    heightBiasFrequency: 10
-    heightBiasCutoff: 0
-    isInverseHeightBias: 0
-    slopeMinStart: 30
-    slopeMinEnd: 30
+    heightTransitionFrequency: 10
+    heightTransitionCutoff: 0
+    slopeMinStart: 0
+    slopeMinEnd: 0
     slopeMaxStart: 60
-    slopeMaxEnd: 60
-    slopeBiasFrequency: 10
-    slopeBiasCutoff: 0
-    isInverseSlopeBias: 0
-    snowAmount: 0.671
-    snowBiasSize: 0.1
-    snowBiasFrequency: 15
-    snowBiasCutoff: 0.25
+    slopeMaxEnd: 70
+    slopeTransitionFrequency: 10
+    slopeTransitionCutoff: 0
+    snowAmount: 0.9
+    snowTransitionSize: 0.1
+    snowTransitionFrequency: 15
+    snowTransitionCutoff: 0.1
   splatType: 2
   paintMethod: 0
   flowMapEffect: 0
-  convexityMapEffect: 1
-  concavityMapEffect: 1
-  isInverseHeightBias: 0
-  isInverseSlopeBias: 0
+  convexityMapEffect: 0
+  concavityMapEffect: 0
+  aspectMapEffect: 2
+  textureMapEffect: 0
   useFlowMapMask: 1
   useConvexityMapMask: 0
   useConcavityMapMask: 0
-  isInverseFlowMap: 0
-  isInverseConvexityMap: 0
-  isInverseConcavityMap: 0
+  useAspectMap: 0
+  useTextureMap: 0
   isInverseFlowMapHeightWeight: 0
-  isInverseFlowMapSlopeWeight: 0
+  isInverseFlowMapSlopeWeight: 1
+  textureMap: {fileID: 2800000, guid: 63dae087e0985ba4f8f408c6725cbf68, type: 3}
+  textureMapChannel: 1

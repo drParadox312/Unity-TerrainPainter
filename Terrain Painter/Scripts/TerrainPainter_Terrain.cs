@@ -20,6 +20,8 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public int terrainIndex = -1;
 
 
+    public TerrainPainter_Terrain[] neighbor_terrains_scripts ;
+
 
 
     // genereted maps
@@ -39,6 +41,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public RenderTexture renderTexture_waterOutMap_down;
     public RenderTexture renderTexture_height_slope_snowWeight_water_Maps;
     public RenderTexture renderTexture_convexity_concavitiy_flow_Maps;
+    public RenderTexture renderTexture_convexity_concavitiy_flow_Maps_newCurvature;
 
 
 
@@ -50,7 +53,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public int hm_y;  // heightMap_Height
     public Vector4 terrainSize;
     public Vector4 terrainPosition;
-    public int terrainHeightMapResolution;
+    public int heightmapResolution;
     public int alphamapResolution;
     public int am_x;            //  alphaMap_Width ;
     public int am_y;            //  alphaMap_Height
@@ -101,6 +104,17 @@ public class TerrainPainter_Terrain : MonoBehaviour
         terrain = this.GetComponent<Terrain>();
         computeShader = manager.computeShader;
 
+        neighbor_terrains_scripts = new TerrainPainter_Terrain[4] ;
+
+        if(terrain.leftNeighbor)
+            neighbor_terrains_scripts[0] = terrain.leftNeighbor.GetComponent<TerrainPainter_Terrain>();
+        if(terrain.topNeighbor)
+            neighbor_terrains_scripts[1] = terrain.topNeighbor.GetComponent<TerrainPainter_Terrain>();
+        if(terrain.rightNeighbor)
+            neighbor_terrains_scripts[2] = terrain.rightNeighbor.GetComponent<TerrainPainter_Terrain>();
+        if(terrain.bottomNeighbor)
+            neighbor_terrains_scripts[3] = terrain.bottomNeighbor.GetComponent<TerrainPainter_Terrain>();
+
         SetUpTerrainParameters();
         SetUpTerrainLayers();
         SetUpSplatMapArray();
@@ -121,7 +135,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
         terrainSize = (Vector4)(terrain.terrainData.size);
         terrainPosition = (Vector4)(this.transform.position);
-        terrainHeightMapResolution = terrain.terrainData.heightmapResolution ;
+        heightmapResolution = terrain.terrainData.heightmapResolution ;
         alphamapResolution = terrain.terrainData.alphamapResolution;
 
         hasNeighborTerrains = new Vector4
@@ -164,7 +178,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
             splatPaintRulesBuffer.Release();
 
 
-        splatPaintRulesBuffer = new ComputeBuffer(manager.splatPaintRulesArray.Length, 40 * sizeof(float));
+        splatPaintRulesBuffer = new ComputeBuffer(manager.splatPaintRulesArray.Length, 47 * sizeof(float));
     }
 
 
@@ -181,11 +195,18 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     void SetUpTextures()
     {
-        renderTexture_unity_heightMap = CreateRenderTexture(hm_x , terrain.terrainData.heightmapTexture.format);
-        renderTexture_height_slope_snowWeight_water_Maps = CreateRenderTexture(hm_x);
-        renderTexture_convexity_concavitiy_flow_Maps = CreateRenderTexture(hm_x);
-        renderTexture_neighbor_terrain_heightMaps = CreateRenderTexture(hm_x);
-        renderTexture_neighbor_terrain_slopeMaps = CreateRenderTexture(hm_x);
+        renderTexture_unity_heightMap = CreateRenderTexture(heightmapResolution , terrain.terrainData.heightmapTexture.format);
+        renderTexture_height_slope_snowWeight_water_Maps = CreateRenderTexture(heightmapResolution);
+        renderTexture_convexity_concavitiy_flow_Maps = CreateRenderTexture(heightmapResolution);
+        renderTexture_convexity_concavitiy_flow_Maps_newCurvature = CreateRenderTexture(heightmapResolution);
+        renderTexture_neighbor_terrain_heightMaps = CreateRenderTexture(heightmapResolution);
+        renderTexture_neighbor_terrain_slopeMaps = CreateRenderTexture(heightmapResolution);
+
+        if(terrain.drawInstanced)
+            renderTexture_unity_normalMap = CopyRenderTexture(terrain.normalmapTexture, terrain.normalmapTexture.format) ;
+        else
+            renderTexture_unity_normalMap = CreateRenderTexture(heightmapResolution) ;
+
     }
 
 
@@ -263,6 +284,8 @@ public class TerrainPainter_Terrain : MonoBehaviour
         Graphics.Blit(p_renderTexture, _rT);
         return _rT;
     }
+
+
     
 
 
@@ -295,15 +318,19 @@ public class TerrainPainter_Terrain : MonoBehaviour
         float _corner_height_x, _corner_height_y, _corner_height_z, _corner_height_w = 0f ;
         float _corner_slope_x, _corner_slope_y, _corner_slope_z, _corner_slope_w = 0f ;
 
-        _corner_height_x = terrain.terrainData.GetHeight(0, hm_y);
-        _corner_height_y = terrain.terrainData.GetHeight(hm_x, hm_y);
-        _corner_height_z = terrain.terrainData.GetHeight(hm_x, 0);
-        _corner_height_w = terrain.terrainData.GetHeight(0, 0);
+        _corner_height_x = terrain.terrainData.GetHeight(1, hm_y -1);
+        _corner_height_y = terrain.terrainData.GetHeight(hm_x -1, hm_y -1);
+        _corner_height_z = terrain.terrainData.GetHeight(hm_x -1, 1);
+        _corner_height_w = terrain.terrainData.GetHeight(1, 1);
 
-        _corner_slope_x = terrain.terrainData.GetSteepness(0f, 1f);
-        _corner_slope_y = terrain.terrainData.GetSteepness(1f, 1f);
-        _corner_slope_z = terrain.terrainData.GetSteepness(1f, 0f);
-        _corner_slope_w = terrain.terrainData.GetSteepness(0f, 0f);
+
+        float _index00 = 1f / (float)hm_x ;
+        float _index11 = (float)(hm_x -1) / (float)hm_x ;
+
+        _corner_slope_x = terrain.terrainData.GetSteepness(_index00, _index11);
+        _corner_slope_y = terrain.terrainData.GetSteepness(_index11, _index11);
+        _corner_slope_z = terrain.terrainData.GetSteepness(_index11, _index00);
+        _corner_slope_w = terrain.terrainData.GetSteepness(_index00, _index00);
 
 
 
@@ -371,7 +398,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
         computeShader.SetVector(NameIDs.terrainSize, terrainSize);
         computeShader.SetVector(NameIDs.terrainPosition, terrainPosition);
-        computeShader.SetInt(NameIDs.terrainHeightMapResolution, terrainHeightMapResolution);
+        computeShader.SetInt(NameIDs.heightmapResolution, heightmapResolution);
         computeShader.SetInt(NameIDs.alphaMapResolution, alphamapResolution);
         computeShader.SetVector(NameIDs.hasNeighborTerrains, hasNeighborTerrains);
         computeShader.SetVector(NameIDs.cornerNeighborTerrainsHeights, cornerNeighborTerrainsHeights);
@@ -410,25 +437,25 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
         if (terrain.leftNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(neighbor_terrains_scripts[0].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.rightNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(neighbor_terrains_scripts[2].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.bottomNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(neighbor_terrains_scripts[3].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.topNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(neighbor_terrains_scripts[1].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Height_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(null));
 
@@ -464,25 +491,25 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
         if (terrain.leftNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(neighbor_terrains_scripts[0].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_left, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.rightNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(neighbor_terrains_scripts[2].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_right, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.bottomNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(neighbor_terrains_scripts[3].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_down, CopyHeightmapRenderTexture(null));
 
 
         if (terrain.topNeighbor)
-            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps));
+            computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(neighbor_terrains_scripts[1].renderTexture_height_slope_snowWeight_water_Maps));
         else
             computeShader.SetTexture(NameIDs.Generate_NeighborTerrain_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps_up, CopyHeightmapRenderTexture(null));
 
@@ -521,10 +548,9 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     void AssignBuffersAndParametersFor_Generate_Slope_Map_Kernel()
     {
-        renderTexture_unity_normalMap = CopyRenderTexture(terrain.normalmapTexture, terrain.normalmapTexture.format) ;
-
         computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.unity_normalMap, renderTexture_unity_normalMap);
         computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps, renderTexture_height_slope_snowWeight_water_Maps);
+        computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.neighbor_terrain_heightMaps, renderTexture_neighbor_terrain_heightMaps);
     }
 
 
@@ -572,7 +598,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     void AssignBuffersAndParametersFor_FlowMap_AddWater_Kernel()
     {
-        renderTexture_waterOutMap_this = CreateRenderTexture(hm_x);
+        renderTexture_waterOutMap_this = CreateRenderTexture(heightmapResolution);
 
         computeShader.SetInt(NameIDs.flowMapIteration, flowMapIteration);
 
@@ -601,12 +627,12 @@ public class TerrainPainter_Terrain : MonoBehaviour
     void AssignBuffersAndParametersFor_FlowMap_GenerateNeighborTerrainWaterMaps()
     {
 
-        renderTexture_neighbor_terrain_waterMaps = CreateRenderTexture(hm_x, RenderTextureFormat.ARGB64);
+        renderTexture_neighbor_terrain_waterMaps = CreateRenderTexture(heightmapResolution, RenderTextureFormat.ARGB64);
 
-        renderTexture_waterMap_left = (terrain.leftNeighbor != null ? terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
-        renderTexture_waterMap_up = (terrain.topNeighbor != null ? terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
-        renderTexture_waterMap_right = (terrain.rightNeighbor != null ? terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
-        renderTexture_waterMap_down = (terrain.bottomNeighbor != null ? terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
+        renderTexture_waterMap_left = (terrain.leftNeighbor != null ? neighbor_terrains_scripts[0].renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
+        renderTexture_waterMap_up = (terrain.topNeighbor != null ? neighbor_terrains_scripts[1].renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
+        renderTexture_waterMap_right = (terrain.rightNeighbor != null ? neighbor_terrains_scripts[2].renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
+        renderTexture_waterMap_down = (terrain.bottomNeighbor != null ? neighbor_terrains_scripts[3].renderTexture_height_slope_snowWeight_water_Maps : CreateRenderTexture(hm_x));
 
 
         computeShader.SetTexture(NameIDs.FlowMap_GenerateNeighborTerrainWaterMaps, NameIDs.waterMap_left, renderTexture_waterMap_left);
@@ -640,10 +666,10 @@ public class TerrainPainter_Terrain : MonoBehaviour
     void AssignBuffersAndParametersFor_FlowMap_CalculateWaterOut_Kernel()
     {
 
-        renderTexture_waterOutMap_left = (terrain.leftNeighbor != null ? terrain.leftNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_waterOutMap_this : CreateRenderTexture(hm_x));
-        renderTexture_waterOutMap_up = (terrain.topNeighbor != null ? terrain.topNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_waterOutMap_this : CreateRenderTexture(hm_x));
-        renderTexture_waterOutMap_right = (terrain.rightNeighbor != null ? terrain.rightNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_waterOutMap_this : CreateRenderTexture(hm_x));
-        renderTexture_waterOutMap_down = (terrain.bottomNeighbor != null ? terrain.bottomNeighbor.gameObject.GetComponent<TerrainPainter_Terrain>().renderTexture_waterOutMap_this : CreateRenderTexture(hm_x));
+        renderTexture_waterOutMap_left = (terrain.leftNeighbor != null ? neighbor_terrains_scripts[0].renderTexture_waterOutMap_this : CreateRenderTexture(heightmapResolution));
+        renderTexture_waterOutMap_up = (terrain.topNeighbor != null ? neighbor_terrains_scripts[1].renderTexture_waterOutMap_this : CreateRenderTexture(heightmapResolution));
+        renderTexture_waterOutMap_right = (terrain.rightNeighbor != null ? neighbor_terrains_scripts[2].renderTexture_waterOutMap_this : CreateRenderTexture(heightmapResolution));
+        renderTexture_waterOutMap_down = (terrain.bottomNeighbor != null ? neighbor_terrains_scripts[3].renderTexture_waterOutMap_this : CreateRenderTexture(heightmapResolution));
 
 
         computeShader.SetTexture(NameIDs.FlowMap_CalculateWaterOut, NameIDs.height_slope_snowWeight_water_Maps, renderTexture_height_slope_snowWeight_water_Maps);
@@ -744,20 +770,95 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
-    void AssignBuffersAndParametersFor_CurvatureMap_Kernel()
+
+
+    void AssignBuffersAndParametersFor_CurvatureMap_FirstPass_Kernel()
     {
-        computeShader.SetTexture(NameIDs.CurvatureMap_Generate, NameIDs.height_slope_snowWeight_water_Maps, renderTexture_height_slope_snowWeight_water_Maps);
-        computeShader.SetTexture(NameIDs.CurvatureMap_Generate, NameIDs.neighbor_terrain_heightMaps, renderTexture_neighbor_terrain_heightMaps);
+        computeShader.SetTexture(NameIDs.CurvatureMap_FirstPass, NameIDs.height_slope_snowWeight_water_Maps, renderTexture_height_slope_snowWeight_water_Maps);
+        computeShader.SetTexture(NameIDs.CurvatureMap_FirstPass, NameIDs.neighbor_terrain_heightMaps, renderTexture_neighbor_terrain_heightMaps);
+        computeShader.SetTexture(NameIDs.CurvatureMap_FirstPass, NameIDs.convexity_concavitiy_flow_Maps, renderTexture_convexity_concavitiy_flow_Maps);
+    }
+
+
+    public void CurvatureMap_FirstPass()
+    {
+        AssignBuffersAndParametersFor_CurvatureMap_FirstPass_Kernel();
+
+        computeShader.Dispatch(NameIDs.CurvatureMap_FirstPass, (hm_x + extraThread) / 8, (hm_y + extraThread) / 8, 1);
+    }
+
+
+
+
+
+
+
+
+
+    void AssignBuffersAndParametersFor_CurvatureMap_SecondPass_Kernel()
+    {
+        if (terrain.leftNeighbor)
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_left, neighbor_terrains_scripts[0].renderTexture_convexity_concavitiy_flow_Maps);
+        else
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_left, CopyHeightmapRenderTexture(null));
+
+
+        if (terrain.rightNeighbor)
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_right, neighbor_terrains_scripts[2].renderTexture_convexity_concavitiy_flow_Maps);
+        else
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_right, CopyHeightmapRenderTexture(null));
+
+
+        if (terrain.bottomNeighbor)
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_down, neighbor_terrains_scripts[3].renderTexture_convexity_concavitiy_flow_Maps);
+        else
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_down, CopyHeightmapRenderTexture(null));
+
+
+        if (terrain.topNeighbor)
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_up, neighbor_terrains_scripts[1].renderTexture_convexity_concavitiy_flow_Maps);
+        else
+            computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_up, CopyHeightmapRenderTexture(null));
+
+
+        computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps, renderTexture_convexity_concavitiy_flow_Maps);
+        computeShader.SetTexture(NameIDs.CurvatureMap_SecondPass, NameIDs.convexity_concavitiy_flow_Maps_newCurvature, renderTexture_convexity_concavitiy_flow_Maps_newCurvature);
+    }
+
+
+    public void CurvatureMap_SecondPass()
+    {
+        AssignBuffersAndParametersFor_CurvatureMap_SecondPass_Kernel();
+
+        computeShader.Dispatch(NameIDs.CurvatureMap_SecondPass, (hm_x + extraThread) / 8, (hm_y + extraThread) / 8, 1);
+    }
+
+
+
+
+
+
+
+
+
+
+    void AssignBuffersAndParametersFor_CurvatureMap_Generate_Kernel()
+    {
+        computeShader.SetTexture(NameIDs.CurvatureMap_Generate, NameIDs.convexity_concavitiy_flow_Maps_newCurvature, renderTexture_convexity_concavitiy_flow_Maps_newCurvature);
         computeShader.SetTexture(NameIDs.CurvatureMap_Generate, NameIDs.convexity_concavitiy_flow_Maps, renderTexture_convexity_concavitiy_flow_Maps);
     }
 
 
     public void CurvatureMap_Generate()
     {
-        AssignBuffersAndParametersFor_CurvatureMap_Kernel();
+        AssignBuffersAndParametersFor_CurvatureMap_Generate_Kernel();
 
         computeShader.Dispatch(NameIDs.CurvatureMap_Generate, (hm_x + extraThread) / 8, (hm_y + extraThread) / 8, 1);
     }
+
+
+
+
 
 
 
@@ -774,7 +875,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
         computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.neighbor_terrain_heightMaps, renderTexture_neighbor_terrain_heightMaps);
         computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.neighbor_terrain_slopeMaps, renderTexture_neighbor_terrain_slopeMaps);
         computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.convexity_concavitiy_flow_Maps, renderTexture_convexity_concavitiy_flow_Maps);
-        
+        computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.unity_normalMap, renderTexture_unity_normalMap);
 
 
         splatPaintRulesBuffer.SetData(manager.splatPaintRulesArray);
@@ -817,6 +918,8 @@ public class TerrainPainter_Terrain : MonoBehaviour
             computeShader.SetInt(NameIDs.splatRuleBufferIndex, p_splatMapArrrayIndex);
             computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.splatMapsArray, splatMapsArray[Mathf.FloorToInt(((float)p_splatMapArrrayIndex) / 4)]);
 
+            if(manager.splats[p_splatMapArrrayIndex].textureMap)
+                computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.textureMap, manager.splats[p_splatMapArrrayIndex].textureMap);
 
             computeShader.Dispatch(NameIDs.Generate_SplatMap, am_x / 8, am_y / 8, 1);
 
@@ -864,12 +967,28 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
             if(splatPaintRulesBuffer != null)
                 splatPaintRulesBuffer.Release();
+
+
+
+            if(manager.blurSplatmap)
+                BlurSplatmap();
         }
     }
 
 
 
 
+
+    public void BlurSplatmap()
+    {
+        if(alphamapResolution > heightmapResolution)
+        {
+            for (int i = 0; i < splatMapsArray.Length; i++)
+            {
+                ResizeSplatmap(ref splatMapsArray[i]);
+            }
+        }
+    }
 
 
 
@@ -909,28 +1028,55 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
         RenderTexture.active = p_renderTexture;
 
-        Texture2D _newTexture = new Texture2D(p_renderTexture.width, p_renderTexture.height, TextureFormat.ARGB32, false);
-        _newTexture.ReadPixels(new Rect(0, 0, _newTexture.width, _newTexture.height), 0, 0);
+        Texture2D _newTexture2D = new Texture2D(p_renderTexture.width, p_renderTexture.height, TextureFormat.ARGB32, false);
+        _newTexture2D.ReadPixels(new Rect(0, 0, _newTexture2D.width, _newTexture2D.height), 0, 0);
 
         RenderTexture.active = previusRT;
-        return _newTexture.GetPixels32(0);
+        return _newTexture2D.GetPixels32(0);
     }
 
 
-    /*
+
+    void ResizeSplatmap(ref RenderTexture p_renderTexture)
+    {
+        int _tmp_res_x = hm_x -1 ;
+        int _tmp_res_y = hm_y -1 ;
+
+        Texture2D _newTexture2D = new Texture2D(p_renderTexture.width, p_renderTexture.height, TextureFormat.ARGB32, false);
+        _newTexture2D.filterMode = FilterMode.Bilinear;
+        _newTexture2D.SetPixels32(GetPixels32FromRenderTexture(p_renderTexture));
+        _newTexture2D.Apply();
+        RenderTexture _newRenderTexture = RenderTexture.GetTemporary(_tmp_res_x, _tmp_res_y, 0, RenderTextureFormat.ARGB32);
+        _newRenderTexture.enableRandomWrite = true;
+        Graphics.Blit(_newTexture2D, _newRenderTexture);
+
+        Texture2D _newTexture2D_second = new Texture2D(_tmp_res_x, _tmp_res_y, TextureFormat.ARGB32, false);
+        _newTexture2D_second.filterMode = FilterMode.Bilinear;
+        _newTexture2D_second.SetPixels32(GetPixels32FromRenderTexture(_newRenderTexture));
+        _newTexture2D_second.Apply();
+        p_renderTexture = RenderTexture.GetTemporary(p_renderTexture.width, p_renderTexture.height, 0, RenderTextureFormat.ARGB32);
+        p_renderTexture.enableRandomWrite = true ;
+        Graphics.Blit(_newTexture2D_second, p_renderTexture);
+
+        RenderTexture.ReleaseTemporary(_newRenderTexture);
+    }
+
+    
     Texture2D ConvertRenderTextureToTexture2D(RenderTexture p_renderTexture)
     {
         RenderTexture previusRT = RenderTexture.active;
 
         RenderTexture.active = p_renderTexture;
 
-        Texture2D _newTexture = new Texture2D(p_renderTexture.width, p_renderTexture.height, TextureFormat.ARGB32, false);
-        _newTexture.ReadPixels(new Rect(0, 0, _newTexture.width, _newTexture.height), 0, 0);
+        Texture2D _newTexture2D = new Texture2D(p_renderTexture.width, p_renderTexture.height, TextureFormat.ARGB32, false);
+        _newTexture2D.ReadPixels(new Rect(0, 0, _newTexture2D.width, _newTexture2D.height), 0, 0);
+        _newTexture2D.Apply();
 
         RenderTexture.active = previusRT;
-        return _newTexture;
+
+        return _newTexture2D;
     }
-    */
+    
 
 
 

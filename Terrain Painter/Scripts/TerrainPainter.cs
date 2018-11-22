@@ -21,7 +21,16 @@ namespace TerrainPainter
     public enum MapMaskEffect
     {
         Include = 0,
-        Additive = 1
+        Exclude = 1,
+        Additive = 2
+    };
+
+    public enum TextureMapChannel
+    {
+        R = 0,
+        G = 1,
+        B = 2,
+        A = 3
     };
 
     [System.Serializable]
@@ -33,14 +42,12 @@ namespace TerrainPainter
         public float useFlowMap;
 	    public float useConvexityMap;
 	    public float useConcavityMap;
-
-        public float isInverseFlowMap;
-	    public float isInverseConvexityMap;
-	    public float isInverseConcavityMap;
+        public float useAspectMap;
+        public float useTextureMap;
 
         public float flowMapWeight;
+        public float flowMapTransition;
         public float flowMapScale;
-        public float flowMapBias;
         public float flowMapHeightWeight;
         public float isInverseFlowMapHeightWeight;
 	    public float flowMapSlopeWeight;
@@ -48,33 +55,43 @@ namespace TerrainPainter
         public float flowMapEffect;
 
         public float convexityMapWeight;
-        public float convexityMapBias;
+        public float convexityMapTransition;
+        public float convexityMapScale;
         public float convexityMapEffect;
 
         public float concavityMapWeight;
-        public float concavityMapBias;
+        public float concavityMapTransition;
+        public float concavityMapScale;
         public float concavityMapEffect;
+
+        public float aspectMapWeight;
+        public float aspectMapPower;
+	    public float aspectMapDirection;
+        public float aspectMapEffect;
+
+        public float textureMapWeight;
+        public float textureMapChannel;
+        public float textureMapResolution;
+        public float textureMapEffect;
 
         public float heightMinStart;
         public float heightMinEnd;
         public float heightMaxStart;
         public float heightMaxEnd;
-        public float heightBiasFrequency;
-        public float heightBiasCutoff;
-        public float isInverseHeightBias;
+        public float heightTransitionFrequency;
+        public float heightTransitionCutoff;
 
         public float slopeMinStart;
         public float slopeMinEnd;
         public float slopeMaxStart;
         public float slopeMaxEnd;
-        public float slopeBiasFrequency;
-        public float slopeBiasCutoff;
-        public float isInverseSlopeBias;
+        public float slopeTransitionFrequency;
+        public float slopeTransitionCutoff;
 
         public float snowAmount;
-        public float snowBiasSize;
-        public float snowBiasFrequency;
-        public float snowBiasCutoff;
+        public float snowTransitionSize;
+        public float snowTransitionFrequency;
+        public float snowTransitionCutoff;
     };
 
     [System.Serializable]
@@ -92,6 +109,8 @@ namespace TerrainPainter
         public static int FlowMap_MoveWater;
         public static int FlowMap_Generate;
 
+        public static int CurvatureMap_FirstPass;
+        public static int CurvatureMap_SecondPass;
         public static int CurvatureMap_Generate;
 
         public static int Generate_SplatMap;
@@ -120,9 +139,14 @@ namespace TerrainPainter
         public static int height_slope_snowWeight_water_Maps;
         public static int normal_Map;
         public static int convexity_concavitiy_flow_Maps;
+        public static int convexity_concavitiy_flow_Maps_left;
+        public static int convexity_concavitiy_flow_Maps_up;
+        public static int convexity_concavitiy_flow_Maps_right;
+        public static int convexity_concavitiy_flow_Maps_down;
+        public static int convexity_concavitiy_flow_Maps_newCurvature; 
         public static int splatMapTotalWeight_Maps;
         public static int splatMapsArray;
-
+        public static int textureMap;
 
 
 
@@ -133,9 +157,10 @@ namespace TerrainPainter
 
 
         // other parameters
+        public static int useDrawInstanced;
         public static int terrainSize;
         public static int terrainPosition;
-        public static int terrainHeightMapResolution;
+        public static int heightmapResolution;
         public static int splatRuleBufferIndex;
         public static int alphaMapResolution;
         public static int flowMapIteration;
@@ -158,6 +183,8 @@ namespace TerrainPainter
             FlowMap_CalculateWaterOut = computeShader.FindKernel("FlowMap_CalculateWaterOut");
             FlowMap_MoveWater = computeShader.FindKernel("FlowMap_MoveWater");
             FlowMap_Generate = computeShader.FindKernel("FlowMap_Generate");
+            CurvatureMap_FirstPass = computeShader.FindKernel("CurvatureMap_FirstPass");
+            CurvatureMap_SecondPass = computeShader.FindKernel("CurvatureMap_SecondPass");
             CurvatureMap_Generate = computeShader.FindKernel("CurvatureMap_Generate");
             Generate_SplatMap = computeShader.FindKernel("Generate_SplatMap");
             Normalize_SplatMap = computeShader.FindKernel("Normalize_SplatMap");
@@ -186,9 +213,14 @@ namespace TerrainPainter
             height_slope_snowWeight_water_Maps = Shader.PropertyToID("height_slope_snowWeight_water_Maps");
             normal_Map = Shader.PropertyToID("normal_Map");
             convexity_concavitiy_flow_Maps = Shader.PropertyToID("convexity_concavitiy_flow_Maps");
+            convexity_concavitiy_flow_Maps_left = Shader.PropertyToID("convexity_concavitiy_flow_Maps_left");
+            convexity_concavitiy_flow_Maps_up = Shader.PropertyToID("convexity_concavitiy_flow_Maps_up");
+            convexity_concavitiy_flow_Maps_right = Shader.PropertyToID("convexity_concavitiy_flow_Maps_right");
+            convexity_concavitiy_flow_Maps_down = Shader.PropertyToID("convexity_concavitiy_flow_Maps_down");
+            convexity_concavitiy_flow_Maps_newCurvature = Shader.PropertyToID("convexity_concavitiy_flow_Maps_newCurvature"); 
             splatMapTotalWeight_Maps = Shader.PropertyToID("splatMapTotalWeight_Maps");
             splatMapsArray = Shader.PropertyToID("splatMapsArray");
-
+            textureMap = Shader.PropertyToID("textureMap");
 
 
 
@@ -200,9 +232,10 @@ namespace TerrainPainter
 
 
             // other paramaters
+            useDrawInstanced = Shader.PropertyToID("useDrawInstanced");
             terrainSize = Shader.PropertyToID("terrainSize");
             terrainPosition = Shader.PropertyToID("terrainPosition");
-            terrainHeightMapResolution = Shader.PropertyToID("terrainHeightMapResolution");
+            heightmapResolution = Shader.PropertyToID("heightmapResolution");
             splatRuleBufferIndex = Shader.PropertyToID("splatRuleBufferIndex");
             alphaMapResolution = Shader.PropertyToID("alphaMapResolution");
             flowMapIteration = Shader.PropertyToID("flowMapIteration");

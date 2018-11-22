@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2805e08a99e47524aa279caf6481c4d9, type: 3}
-  m_Name: Splat_Cliff
+  m_Name: Splat_Rocky Dirt
   m_EditorClassIdentifier: 
-  name: Cliff
-  terrainLayer: {fileID: 8574412962073106934, guid: 6bb0ad2ce1440c246a899093f0414b71,
+  name: Rocky Dirt
+  terrainLayer: {fileID: 8574412962073106934, guid: 73e8f45c6e447494090cb487d851291c,
     type: 2}
   paintRules:
     splatType: 0
@@ -23,15 +23,15 @@ MonoBehaviour:
     useConcavityMap: 0
     useAspectMap: 0
     useTextureMap: 0
-    flowMapWeight: 0.75
+    flowMapWeight: 0
     flowMapTransition: 0
-    flowMapScale: 1000
+    flowMapScale: 0
     flowMapHeightWeight: 0
     isInverseFlowMapHeightWeight: 0
     flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: 0
     flowMapEffect: 0
-    convexityMapWeight: 0.01
+    convexityMapWeight: 0
     convexityMapTransition: 0
     convexityMapScale: 0
     convexityMapEffect: 0
@@ -53,10 +53,10 @@ MonoBehaviour:
     heightMaxEnd: 1500
     heightTransitionFrequency: 0
     heightTransitionCutoff: 0
-    slopeMinStart: 30
-    slopeMinEnd: 45
-    slopeMaxStart: 90
-    slopeMaxEnd: 90
+    slopeMinStart: 20
+    slopeMinEnd: 30
+    slopeMaxStart: 45
+    slopeMaxEnd: 50
     slopeTransitionFrequency: 10
     slopeTransitionCutoff: 0.5
     snowAmount: 0
