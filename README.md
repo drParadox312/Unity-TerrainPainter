@@ -29,3 +29,4 @@ Using Asset :
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%201.JPG)
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%203.JPG)
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%2011.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%209.JPG)
