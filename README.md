@@ -1,6 +1,11 @@
 
 
-TerrainPainter
+TerrainPainter is a splatmap generation tool based on GPU computing.
+
+Features :
+- paint rules (height, slope etc.)
+- masks (flowmap, convexity, concavity, aspect, texture map)
+- compatible unity's terrain system.
 
 
 Using Asset :
@@ -18,10 +23,8 @@ Using Asset :
 6- After that just tweak parameters to see effect.
 
 
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%206.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%201.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%202.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%205.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%209.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot.png)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Terrain%20Painter/Screenshots/screenshot%208.png)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%2010.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%205.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%201.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%203.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%2011.JPG)
