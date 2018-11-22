@@ -2,10 +2,12 @@
 
 TerrainPainter is a splatmap generation tool based on GPU computing.
 
+
 Features :
 - paint rules (height, slope, masks etc.)
 - mask generation (flowmap, convexity, concavity, aspect, texture map)
 - compatible unity's terrain system.
+
 
 
 
