@@ -187,7 +187,11 @@ namespace TerrainPainter
         public static int _SplatCount;
         public static int _UvScaleArray;
         public static int _TriplanarWeightMap;
-        public static int _TextureArrayManualPainted;
+        public static int _ManualPaintedSplatMap0;
+        public static int _ManualPaintedSplatMap1;
+        public static int _ManualPaintedSplatMap2;
+        public static int _ManualPaintedSplatMap3;
+    //    public static int _TextureArrayManualPainted;
         public static int _TextureArraySplatmap;
         public static int _TextureArrayDiffuse;
         public static int _TextureArrayNormal;
@@ -295,7 +299,11 @@ namespace TerrainPainter
             _SplatCount = Shader.PropertyToID("_SplatCount");
             _UvScaleArray = Shader.PropertyToID("_UvScaleArray");
             _TriplanarWeightMap = Shader.PropertyToID("_TriplanarWeightMap");
-            _TextureArrayManualPainted = Shader.PropertyToID("_TextureArrayManualPainted");
+            _ManualPaintedSplatMap0 = Shader.PropertyToID("_ManualPaintedSplatMap0");
+            _ManualPaintedSplatMap1 = Shader.PropertyToID("_ManualPaintedSplatMap1");
+            _ManualPaintedSplatMap2 = Shader.PropertyToID("_ManualPaintedSplatMap2");
+            _ManualPaintedSplatMap3 = Shader.PropertyToID("_ManualPaintedSplatMap3");
+        //    _TextureArrayManualPainted = Shader.PropertyToID("_TextureArrayManualPainted");
             _TextureArraySplatmap = Shader.PropertyToID("_TextureArraySplatmap");
             _TextureArrayDiffuse = Shader.PropertyToID("_TextureArrayDiffuse");
             _TextureArrayNormal = Shader.PropertyToID("_TextureArrayNormal");

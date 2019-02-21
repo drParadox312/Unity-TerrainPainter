@@ -79,4 +79,4 @@ MonoBehaviour:
   isInverseFlowMapSlopeWeight: 0
   textureMap: {fileID: 0}
   textureMapChannel: 0
-  occlusionMap: {fileID: 2800000, guid: c2a9e59134694fa40b879c525e3fdebb, type: 3}
+  occlusionMap: {fileID: 2800000, guid: 74904e460ca874f4b93c6143fff08be5, type: 3}

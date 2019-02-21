@@ -7,13 +7,18 @@
 		_TriplanarCutoffBias("_UseTriplanar", Range(0,1)) = 0.5
 
 		[HideInInspector] _SplatCount("_SplatCount", Int) = 0
-		_TriplanarWeightMap("_TriplanarWeightMap", 2D) = "" {}
-		_TextureArrayManualPainted("_TextureArrayManualPainted", 2DArray) = "" {}
+		[NoScaleOffset] _TriplanarWeightMap("_TriplanarWeightMap", 2D) = "" {}
+		[NoScaleOffset] _ManualPaintedSplatMap0("_ManualPaintedSplatMap0", 2D) = "" {}
+		[NoScaleOffset] _ManualPaintedSplatMap1("_ManualPaintedSplatMap1", 2D) = "" {}
+		[NoScaleOffset] _ManualPaintedSplatMap2("_ManualPaintedSplatMap2", 2D) = "" {}
+		[NoScaleOffset] _ManualPaintedSplatMap3("_ManualPaintedSplatMap3", 2D) = "" {}
+	//	[NoScaleOffset] _TextureArrayManualPainted("_TextureArrayManualPainted", 2DArray) = "" {}
+
 		_TextureArraySplatmap("_TextureArraySplatmap", 2DArray) = "" {}
-		_TextureArrayDiffuse("_TextureArrayDiffuse", 2DArray) = "" {}
-		_TextureArrayNormal("_TextureArrayNormal", 2DArray) = "" {}
-		_TextureArrayHeightmap("_TextureArrayHeightmap", 2DArray) = "" {}
-		_TextureArrayOcclusion("_TextureArrayOcclusion", 2DArray) = "" {}
+		[NoScaleOffset] _TextureArrayDiffuse("_TextureArrayDiffuse", 2DArray) = "" {}
+		[NoScaleOffset] _TextureArrayNormal("_TextureArrayNormal", 2DArray) = "" {}
+		[NoScaleOffset] _TextureArrayHeightmap("_TextureArrayHeightmap", 2DArray) = "" {}
+		[NoScaleOffset] _TextureArrayOcclusion("_TextureArrayOcclusion", 2DArray) = "" {}
 	//	_ColorMapDiffuse("_ColorMapDiffuse", 2D) = "" {}
 	//	_ColorMapNormal("_ColorMapNormal", 2D) = "" {}
 	}
@@ -54,7 +59,11 @@
 		float _UvScale;
 		int _SplatCount;
 		sampler2D _TriplanarWeightMap;
-		UNITY_DECLARE_TEX2DARRAY(_TextureArrayManualPainted);
+		sampler2D _ManualPaintedSplatMap0;
+		sampler2D _ManualPaintedSplatMap1;
+		sampler2D _ManualPaintedSplatMap2;
+		sampler2D _ManualPaintedSplatMap3;
+	//	UNITY_DECLARE_TEX2DARRAY(_TextureArrayManualPainted);
 		UNITY_DECLARE_TEX2DARRAY(_TextureArraySplatmap);
 		UNITY_DECLARE_TEX2DARRAY(_TextureArrayDiffuse);
 		UNITY_DECLARE_TEX2DARRAY(_TextureArrayNormal);
@@ -68,6 +77,30 @@
 
 
 
+		float4 GetManualPaintedSplatMapColor(float2 uv, int splatIndex)
+		{
+			float4 sampledSplatColor = 0;
+
+			UNITY_BRANCH
+			if (splatIndex == 0)
+			{
+				sampledSplatColor = tex2D(_ManualPaintedSplatMap0, uv);
+			}
+			else if (splatIndex == 1)
+			{
+				sampledSplatColor = tex2D(_ManualPaintedSplatMap1, uv);
+			}
+			else if (splatIndex == 2)
+			{
+				sampledSplatColor = tex2D(_ManualPaintedSplatMap2, uv);
+			}
+			else if (splatIndex == 3)
+			{
+				sampledSplatColor = tex2D(_ManualPaintedSplatMap3, uv);
+			}
+			
+			return sampledSplatColor;
+		}
 
 
 
@@ -79,7 +112,8 @@
 			{
 				int splatIndex = (int)floor(((float)i) / 4.0);
 				float chanelIndex = fmod(((float)i),4);
-				float4 sampledSplatColor = UNITY_SAMPLE_TEX2DARRAY(_TextureArrayManualPainted, float3(IN.uv_TextureArraySplatmap, splatIndex));
+			//	float4 sampledSplatColor = UNITY_SAMPLE_TEX2DARRAY(_TextureArrayManualPainted, float3(IN.uv_TextureArraySplatmap, splatIndex));
+				float4 sampledSplatColor = GetManualPaintedSplatMapColor(IN.uv_TextureArraySplatmap, splatIndex);
 
 				UNITY_BRANCH
 				if (chanelIndex == 0)
@@ -102,12 +136,13 @@
 
 		fixed SampleSplatMap(Input IN, int splatIndex, float chanelIndex, float unpaintedWeight)
 		{
-			fixed sampledSplat;
-			fixed4 proceduralSplatColor = 0;
-			fixed4 manualSplatColor = 0;
+			float sampledSplat;
+			float4 proceduralSplatColor = 0;
+			float4 manualSplatColor = 0;
 
 			proceduralSplatColor = unpaintedWeight * UNITY_SAMPLE_TEX2DARRAY(_TextureArraySplatmap, float3(IN.uv_TextureArraySplatmap, splatIndex));
-			manualSplatColor = UNITY_SAMPLE_TEX2DARRAY(_TextureArrayManualPainted, float3(IN.uv_TextureArraySplatmap, splatIndex));
+		//	manualSplatColor = UNITY_SAMPLE_TEX2DARRAY(_TextureArrayManualPainted, float3(IN.uv_TextureArraySplatmap, splatIndex));
+			manualSplatColor = GetManualPaintedSplatMapColor(IN.uv_TextureArraySplatmap, splatIndex);
 
 
 			UNITY_BRANCH

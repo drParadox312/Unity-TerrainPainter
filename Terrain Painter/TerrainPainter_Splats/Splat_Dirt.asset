@@ -50,14 +50,14 @@ MonoBehaviour:
     heightMinStart: 0
     heightMinEnd: 0
     heightMaxStart: 100
-    heightMaxEnd: 300
+    heightMaxEnd: 500
     heightTransitionFrequency: 0
     heightTransitionCutoff: 0
     slopeMinStart: 0
     slopeMinEnd: 0
     slopeMaxStart: 5
-    slopeMaxEnd: 20
-    slopeTransitionFrequency: 20
+    slopeMaxEnd: 30
+    slopeTransitionFrequency: 5
     slopeTransitionCutoff: 0
     snowAmount: 0
     snowTransitionSize: 0

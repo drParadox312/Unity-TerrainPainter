@@ -23,12 +23,12 @@ MonoBehaviour:
     useConcavityMap: 0
     useAspectMap: 0
     useTextureMap: 0
-    flowMapWeight: 0.8
-    flowMapTransition: 0.5
+    flowMapWeight: 0.6
+    flowMapTransition: 0.3
     flowMapScale: 750
-    flowMapHeightWeight: 0
+    flowMapHeightWeight: 0.25
     isInverseFlowMapHeightWeight: 0
-    flowMapSlopeWeight: 0.75
+    flowMapSlopeWeight: 0
     isInverseFlowMapSlopeWeight: 1
     flowMapEffect: 0
     convexityMapWeight: 0.7
@@ -60,9 +60,9 @@ MonoBehaviour:
     slopeTransitionFrequency: 10
     slopeTransitionCutoff: 0
     snowAmount: 0.8
-    snowTransitionSize: 0.1
-    snowTransitionFrequency: 15
-    snowTransitionCutoff: 0.1
+    snowTransitionSize: 0.0671
+    snowTransitionFrequency: 5
+    snowTransitionCutoff: 0.3
   splatType: 2
   paintMethod: 0
   flowMapEffect: 0

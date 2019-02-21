@@ -32,7 +32,39 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ManualPaintedSplatMap0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ManualPaintedSplatMap1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ManualPaintedSplatMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ManualPaintedSplatMap3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SplatIndexMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainSplatMap0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainSplatMap1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainSplatMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainSplatMap3:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -74,7 +106,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _ColorMapDistance: 0.8
-    - _HeightBlendingTransition: 0.1
+    - _HeightBlendingTransition: 0.2
     - _HeightBlendingTreshold: 1
     - _HeightmapBlendingDistance: 0.8
     - _HeightmapCutoff: 0.1
@@ -84,7 +116,7 @@ Material:
     - _LerpingPower: 1
     - _NormalSelection: 1
     - _SplatCount: 5
-    - _TriplanarCutoffBias: 0.7
+    - _TriplanarCutoffBias: 0.5
     - _TriplanarPower: 10
     - _TriplanarTreshold: 0.5
     - _UseBlending: 0

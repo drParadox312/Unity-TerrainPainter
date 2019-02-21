@@ -53,8 +53,8 @@ MonoBehaviour:
     heightMaxEnd: 1500
     heightTransitionFrequency: 0
     heightTransitionCutoff: 0
-    slopeMinStart: 30
-    slopeMinEnd: 40
+    slopeMinStart: 25
+    slopeMinEnd: 45
     slopeMaxStart: 90
     slopeMaxEnd: 90
     slopeTransitionFrequency: 0

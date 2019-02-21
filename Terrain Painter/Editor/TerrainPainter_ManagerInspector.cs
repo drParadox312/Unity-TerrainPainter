@@ -464,7 +464,7 @@ public class TerrainPainter_ManagerInspector : Editor
 
                                     managerScript.splats[selected_splat_index].paintRules.snowAmount = EditorGUILayout.Slider("Snow Amount", managerScript.splats[selected_splat_index].paintRules.snowAmount, 0f, 1f);
                                     managerScript.splats[selected_splat_index].paintRules.snowTransitionSize = EditorGUILayout.Slider("Snow Transition Size", managerScript.splats[selected_splat_index].paintRules.snowTransitionSize, 0f, 0.1f);
-                                    managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency = EditorGUILayout.Slider("Snow Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency = EditorGUILayout.Slider("Snow Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.snowTransitionFrequency, 0f, 5f);
                                     managerScript.splats[selected_splat_index].paintRules.snowTransitionCutoff = EditorGUILayout.Slider("Snow Transition Cutoff", managerScript.splats[selected_splat_index].paintRules.snowTransitionCutoff, 0f, 1f);
 
                                 }
@@ -500,7 +500,7 @@ public class TerrainPainter_ManagerInspector : Editor
                                     EditorGUILayout.EndHorizontal();
                                     
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency = EditorGUILayout.Slider("Height Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency = EditorGUILayout.Slider("Height Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.heightTransitionFrequency, 0f, 5f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 
@@ -547,7 +547,7 @@ public class TerrainPainter_ManagerInspector : Editor
                                     EditorGUILayout.EndHorizontal();
 
                                     EditorGUILayout.BeginHorizontal();
-                                    managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency = EditorGUILayout.Slider("Slope Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency, 0f, 20f);
+                                    managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency = EditorGUILayout.Slider("Slope Transition Ferquency", managerScript.splats[selected_splat_index].paintRules.slopeTransitionFrequency, 0f, 5f);
                                     EditorGUILayout.Separator();
                                     EditorGUILayout.EndHorizontal();
 

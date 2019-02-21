@@ -80,7 +80,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
     public Material customTerrainMaterial ;
-    public Texture2DArray texture2DArray_manualPainted ;
+ //   public Texture2DArray texture2DArray_manualPainted ;
     public Texture2DArray texture2DArray_splat ;
     public RenderTexture colorMapDiffuse ;
     public RenderTexture colorMapNormal ;
@@ -1145,8 +1145,9 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
     public void UpdateTerrainMaterialManualPaintedArea()
     {
-        if(manager.customTerrainMaterial)
+        if (manager.customTerrainMaterial)
         {
+            /*
             if(texture2DArray_manualPainted == null)
             {
                 texture2DArray_manualPainted = new Texture2DArray(am_x, am_y, terrain.terrainData.alphamapTextures.Length,  TextureFormat.RGBA32, true) ;
@@ -1162,6 +1163,35 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
             customTerrainMaterial.SetTexture(NameIDs._TextureArrayManualPainted, texture2DArray_manualPainted) ;
+            */
+
+
+            switch (terrain.terrainData.alphamapTextureCount)
+            {
+                case 1:
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap0, terrain.terrainData.alphamapTextures[0]);
+                    break;
+
+                case 2:
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap0, terrain.terrainData.alphamapTextures[0]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap1, terrain.terrainData.alphamapTextures[1]);
+                    break;
+
+                case 3:
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap0, terrain.terrainData.alphamapTextures[0]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap1, terrain.terrainData.alphamapTextures[1]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap2, terrain.terrainData.alphamapTextures[2]);
+                    break;
+
+                case 4:
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap0, terrain.terrainData.alphamapTextures[0]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap1, terrain.terrainData.alphamapTextures[1]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap2, terrain.terrainData.alphamapTextures[2]);
+                    customTerrainMaterial.SetTexture(NameIDs._ManualPaintedSplatMap3, terrain.terrainData.alphamapTextures[3]);
+                    break;
+            }
+
+            
         }
     }
 

@@ -15,21 +15,21 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public bool isInitialized = false;
 
-    public bool checkForNewTerrainsOnEnable = true ;
-    public bool autoUpdate = true ;
+    public bool checkForNewTerrainsOnEnable = true;
+    public bool autoUpdate = true;
     public bool autoUpdateFlowMap;
 
     public bool hasTerrainHeigtmapChanged = false;
-    public bool[] heigtmapChangedTerrains ;
+    public bool[] heigtmapChangedTerrains;
 
     public TerrainPainter_Splat[] splats;
     public TerrainLayer[] terrainLayers;
 
     public SplatPaintRules[] splatPaintRulesArray;
 
-    public bool blurSplatmap = true ;
+    public bool blurSplatmap = true;
 
-    public float maxTerrainHeight = 3000f ;
+    public float maxTerrainHeight = 3000f;
 
     public int flowMapIteration = 10;
 
@@ -45,9 +45,9 @@ public class TerrainPainter_Manager : MonoBehaviour
     public float triplanarCutoffBias = 0.5f;
 
 
-    public Material customTerrainMaterial ;
-    public Texture2DArray texture2DArray_diffuse ;
-    public Texture2DArray texture2DArray_normal ;
+    public Material customTerrainMaterial;
+    public Texture2DArray texture2DArray_diffuse;
+    public Texture2DArray texture2DArray_normal;
     public Texture2DArray texture2DArray_height;
     public Texture2DArray texture2DArray_occlusion;
 
@@ -61,19 +61,19 @@ public class TerrainPainter_Manager : MonoBehaviour
     {
 
         if (computeShader == null)
-            return ;
+            return;
 
-        
+
         if (checkForNewTerrainsOnEnable)
         {
             bool _hasArrayChanged = false;
             Terrain[] _foundTerrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
 
-            if(_foundTerrains != null)
+            if (_foundTerrains != null)
             {
-                if(_foundTerrains.Length > 0)
+                if (_foundTerrains.Length > 0)
                 {
-                    if(terrains != null)
+                    if (terrains != null)
                     {
                         for (int i = 0; i < _foundTerrains.Length; i++)
                         {
@@ -97,7 +97,7 @@ public class TerrainPainter_Manager : MonoBehaviour
                 FindTerrains();
             }
         }
-        else if(isInitialized == false)
+        else if (isInitialized == false)
         {
             FindTerrains();
         }
@@ -121,23 +121,23 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         int _hmR = terrains[0].terrainData.heightmapResolution;
         int _amR = terrains[0].terrainData.alphamapResolution;
-        Vector3 _size = terrains[0].terrainData.size ;
+        Vector3 _size = terrains[0].terrainData.size;
 
-        for(int i=0 ; i< terrains.Length; i++)
+        for (int i = 0; i < terrains.Length; i++)
         {
-            if(i > 0)
+            if (i > 0)
             {
-                if(_hmR != terrains[i].terrainData.heightmapResolution  ||  _amR !=  terrains[i].terrainData.alphamapResolution ||  _size != terrains[i].terrainData.size)
+                if (_hmR != terrains[i].terrainData.heightmapResolution || _amR != terrains[i].terrainData.alphamapResolution || _size != terrains[i].terrainData.size)
                 {
-                    Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.") ;
-                    return ;
+                    Debug.LogError("All terrains must be have same sized heightmap resoluiton and same sized alphamap resolution.");
+                    return;
                 }
             }
         }
 
 
-        if(splats == null)
-            splats = new TerrainPainter_Splat[0] ;
+        if (splats == null)
+            splats = new TerrainPainter_Splat[0];
         else
             RemoveNullElementFromSplatArray();
 
@@ -152,7 +152,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
 
 
-        if(terrains[0].drawInstanced)
+        if (terrains[0].drawInstanced)
             computeShader.SetFloat(NameIDs.useDrawInstanced, 1f);
         else
             computeShader.SetFloat(NameIDs.useDrawInstanced, -1f);
@@ -195,26 +195,26 @@ public class TerrainPainter_Manager : MonoBehaviour
 
     public void SetUpCustomTerrainMaterail()
     {
-        if(splats == null || (splats != null && splats.Length == 0))
+        if (splats == null || (splats != null && splats.Length == 0))
         {
-            Debug.LogError("Assign any splat.") ;
+            Debug.LogError("Assign any splat.");
             customTerrainMaterial = null;
-            return ;
+            return;
         }
 
 
-        if(customTerrainMaterial != null)
+        if (customTerrainMaterial != null)
         {
             SetUpTexture2DArrays();
 
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                    terrainScripts[i].SetUpTerrainMaterial();
+                terrainScripts[i].SetUpTerrainMaterial();
             }
 
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                    terrainScripts[i].UpdateTerrainMaterialProperty();
+                terrainScripts[i].UpdateTerrainMaterialProperty();
             }
 
         }
@@ -222,7 +222,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         {
             for (int i = 0; i < terrainScripts.Length; i++)
             {
-                    terrainScripts[i].SetUpTerrainMaterial();
+                terrainScripts[i].SetUpTerrainMaterial();
             }
         }
     }
@@ -232,20 +232,20 @@ public class TerrainPainter_Manager : MonoBehaviour
     public void SetUpTexture2DArrays()
     {
 
-        if(customTerrainMaterial)
+        if (customTerrainMaterial)
         {
-            int _resolution = splats[0].terrainLayer.diffuseTexture.width ;
-            int _layerCount = splats.Length ;
+            int _resolution = splats[0].terrainLayer.diffuseTexture.width;
+            int _layerCount = splats.Length;
 
             texture2DArray_diffuse = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
             texture2DArray_normal = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
             texture2DArray_height = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
             texture2DArray_occlusion = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
 
-            for (int i=0; i<_layerCount; i++)
+            for (int i = 0; i < _layerCount; i++)
             {
-                texture2DArray_diffuse.SetPixels32(splats[i].terrainLayer.diffuseTexture.GetPixels32(), i , 0) ;
-                texture2DArray_normal.SetPixels32(splats[i].terrainLayer.normalMapTexture.GetPixels32(), i , 0) ;
+                texture2DArray_diffuse.SetPixels32(splats[i].terrainLayer.diffuseTexture.GetPixels32(), i, 0);
+                texture2DArray_normal.SetPixels32(splats[i].terrainLayer.normalMapTexture.GetPixels32(), i, 0);
                 texture2DArray_height.SetPixels32(splats[i].terrainLayer.maskMapTexture.GetPixels32(), i, 0);
                 texture2DArray_occlusion.SetPixels32(splats[i].occlusionMap.GetPixels32(), i, 0);
             }
@@ -256,10 +256,10 @@ public class TerrainPainter_Manager : MonoBehaviour
             texture2DArray_occlusion.Apply();
 
 
-            customTerrainMaterial.SetTexture(NameIDs._TextureArrayDiffuse,texture2DArray_diffuse);
-            customTerrainMaterial.SetTexture(NameIDs._TextureArrayNormal,texture2DArray_normal);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayDiffuse, texture2DArray_diffuse);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayNormal, texture2DArray_normal);
             customTerrainMaterial.SetTexture(NameIDs._TextureArrayHeightmap, texture2DArray_height);
-            customTerrainMaterial.SetTexture(NameIDs._TextureArrayOcclusion, texture2DArray_occlusion); 
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayOcclusion, texture2DArray_occlusion);
         }
     }
 
@@ -273,7 +273,7 @@ public class TerrainPainter_Manager : MonoBehaviour
     public void TerrainHeightmapChanged(int p_terrainIndex)
     {
         hasTerrainHeigtmapChanged = true;
-        heigtmapChangedTerrains[p_terrainIndex] = true ;
+        heigtmapChangedTerrains[p_terrainIndex] = true;
     }
 
 
@@ -294,7 +294,10 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         isUpdating = false;
     }
-    
+
+
+
+
 
 
     public void UpdateTerrains()
