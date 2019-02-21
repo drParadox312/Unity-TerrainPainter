@@ -8,8 +8,8 @@ Features :
 - mask generation (flowmap, convexity, concavity, aspect, texture map)
 - compatible unity's terrain system.
 - custom terrain shader :
-   > triplanar mapping
-   > height blending
+   > triplanar mapping, 
+   > height blending, 
    > tiling reduction
 
 
