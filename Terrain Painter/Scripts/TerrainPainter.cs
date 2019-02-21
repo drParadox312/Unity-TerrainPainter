@@ -33,6 +33,8 @@ namespace TerrainPainter
         A = 3
     };
 
+
+
     [System.Serializable]
     public struct SplatPaintRules
     {
@@ -116,6 +118,9 @@ namespace TerrainPainter
         public static int Generate_SplatMap;
         public static int Normalize_SplatMap;
 
+        public static int Generate_ColorMap;
+
+
 
         // genereted maps
         public static int unity_heightMap;
@@ -146,7 +151,13 @@ namespace TerrainPainter
         public static int convexity_concavitiy_flow_Maps_newCurvature; 
         public static int splatMapTotalWeight_Maps;
         public static int splatMapsArray;
+        public static int triplanarWeightMap;
+        public static int splatIndexMap;
         public static int textureMap;
+        public static int diffuseTexture;
+        public static int normalTexture;
+        public static int colorMapDiffuse;
+        public static int colorMapNormal;
 
 
 
@@ -161,12 +172,37 @@ namespace TerrainPainter
         public static int terrainSize;
         public static int terrainPosition;
         public static int heightmapResolution;
+        public static int splatCount;
         public static int splatRuleBufferIndex;
         public static int alphaMapResolution;
         public static int flowMapIteration;
         public static int hasNeighborTerrains;
         public static int cornerNeighborTerrainsHeights;
         public static int cornerNeighborTerrainsSlopes;
+        public static int uvSize;
+
+
+
+        // custom terrain shader
+        public static int _SplatCount;
+        public static int _UvScaleArray;
+        public static int _TriplanarWeightMap;
+        public static int _TextureArrayManualPainted;
+        public static int _TextureArraySplatmap;
+        public static int _TextureArrayDiffuse;
+        public static int _TextureArrayNormal;
+        public static int _TextureArrayHeightmap;
+        public static int _TextureArrayOcclusion;
+        public static int _LerpingDistance;
+        public static int _HeightBlendingTransition;
+        public static int _TriplanarCutoffBias;
+        public static int _ColorMapDistance;
+
+
+        // custom terrain shaderBase
+        public static int _ColorMapDiffuse;
+        public static int _ColorMapNormal;
+
 
 
         public static void SetUpNameIDS(ComputeShader computeShader)
@@ -188,6 +224,7 @@ namespace TerrainPainter
             CurvatureMap_Generate = computeShader.FindKernel("CurvatureMap_Generate");
             Generate_SplatMap = computeShader.FindKernel("Generate_SplatMap");
             Normalize_SplatMap = computeShader.FindKernel("Normalize_SplatMap");
+            Generate_ColorMap = computeShader.FindKernel("Generate_ColorMap");
 
 
 
@@ -220,7 +257,13 @@ namespace TerrainPainter
             convexity_concavitiy_flow_Maps_newCurvature = Shader.PropertyToID("convexity_concavitiy_flow_Maps_newCurvature"); 
             splatMapTotalWeight_Maps = Shader.PropertyToID("splatMapTotalWeight_Maps");
             splatMapsArray = Shader.PropertyToID("splatMapsArray");
+            triplanarWeightMap = Shader.PropertyToID("triplanarWeightMap");
+            splatIndexMap = Shader.PropertyToID("splatIndexMap");
             textureMap = Shader.PropertyToID("textureMap");
+            diffuseTexture = Shader.PropertyToID("diffuseTexture");
+            normalTexture = Shader.PropertyToID("normalTexture");
+            colorMapDiffuse = Shader.PropertyToID("colorMapDiffuse");
+            colorMapNormal = Shader.PropertyToID("colorMapNormal");
 
 
 
@@ -236,12 +279,37 @@ namespace TerrainPainter
             terrainSize = Shader.PropertyToID("terrainSize");
             terrainPosition = Shader.PropertyToID("terrainPosition");
             heightmapResolution = Shader.PropertyToID("heightmapResolution");
+            splatCount = Shader.PropertyToID("splatCount");
             splatRuleBufferIndex = Shader.PropertyToID("splatRuleBufferIndex");
             alphaMapResolution = Shader.PropertyToID("alphaMapResolution");
             flowMapIteration = Shader.PropertyToID("flowMapIteration");
             hasNeighborTerrains = Shader.PropertyToID("hasNeighborTerrains");
             cornerNeighborTerrainsHeights = Shader.PropertyToID("cornerNeighborTerrainsHeights");
             cornerNeighborTerrainsSlopes = Shader.PropertyToID("cornerNeighborTerrainsSlopes");
+            uvSize = Shader.PropertyToID("uvSize");
+
+
+
+
+            // custom terrain shader
+            _SplatCount = Shader.PropertyToID("_SplatCount");
+            _UvScaleArray = Shader.PropertyToID("_UvScaleArray");
+            _TriplanarWeightMap = Shader.PropertyToID("_TriplanarWeightMap");
+            _TextureArrayManualPainted = Shader.PropertyToID("_TextureArrayManualPainted");
+            _TextureArraySplatmap = Shader.PropertyToID("_TextureArraySplatmap");
+            _TextureArrayDiffuse = Shader.PropertyToID("_TextureArrayDiffuse");
+            _TextureArrayNormal = Shader.PropertyToID("_TextureArrayNormal");
+            _TextureArrayHeightmap = Shader.PropertyToID("_TextureArrayHeightmap");
+            _TextureArrayOcclusion = Shader.PropertyToID("_TextureArrayOcclusion");
+            _LerpingDistance = Shader.PropertyToID("_LerpingDistance");
+            _HeightBlendingTransition = Shader.PropertyToID("_HeightBlendingTransition");
+            _TriplanarCutoffBias = Shader.PropertyToID("_TriplanarCutoffBias");
+            _ColorMapDistance = Shader.PropertyToID("_ColorMapDistance");
+
+
+            _ColorMapDiffuse = Shader.PropertyToID("_ColorMapDiffuse");
+            _ColorMapNormal = Shader.PropertyToID("_ColorMapNormal");
+
         }
     }
 }

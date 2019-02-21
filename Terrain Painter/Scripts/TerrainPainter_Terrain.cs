@@ -42,6 +42,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public RenderTexture renderTexture_height_slope_snowWeight_water_Maps;
     public RenderTexture renderTexture_convexity_concavitiy_flow_Maps;
     public RenderTexture renderTexture_convexity_concavitiy_flow_Maps_newCurvature;
+    public RenderTexture renderTexture_triplanarWeightMap;
 
 
 
@@ -78,7 +79,11 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
-
+    public Material customTerrainMaterial ;
+    public Texture2DArray texture2DArray_manualPainted ;
+    public Texture2DArray texture2DArray_splat ;
+    public RenderTexture colorMapDiffuse ;
+    public RenderTexture colorMapNormal ;
 
 
 
@@ -104,6 +109,8 @@ public class TerrainPainter_Terrain : MonoBehaviour
         terrain = this.GetComponent<Terrain>();
         computeShader = manager.computeShader;
 
+        SetUpTerrainMaterial();
+
         neighbor_terrains_scripts = new TerrainPainter_Terrain[4] ;
 
         if(terrain.leftNeighbor)
@@ -123,6 +130,20 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
+    public void SetUpTerrainMaterial()
+    {
+        if(manager.customTerrainMaterial)
+        {
+            terrain.materialType = Terrain.MaterialType.Custom ;
+            customTerrainMaterial = (Material)Instantiate(manager.customTerrainMaterial);
+        //    customTerrainMaterial = manager.customTerrainMaterial;
+            terrain.materialTemplate = customTerrainMaterial ;
+        }
+        else
+        {
+            terrain.materialType = Terrain.MaterialType.BuiltInStandard ;
+        }
+    }
 
 
     void SetUpTerrainParameters()
@@ -153,6 +174,17 @@ public class TerrainPainter_Terrain : MonoBehaviour
     public void SetUpTerrainLayers()
     {
         terrain.terrainData.terrainLayers = manager.terrainLayers;
+
+        Vector4[] _UvScaleArray = new Vector4[16] ;
+        for(int i=0; i < terrain.terrainData.terrainLayers.Length; i++)
+        {
+            _UvScaleArray[i] = new Vector4(terrain.terrainData.terrainLayers[i].tileSize.x, terrain.terrainData.terrainLayers[i].tileSize.y, terrain.terrainData.terrainLayers[i].tileOffset.x, terrain.terrainData.terrainLayers[i].tileOffset.y) ;
+        }
+
+
+        customTerrainMaterial.SetInt(NameIDs._SplatCount, terrain.terrainData.terrainLayers.Length);
+        customTerrainMaterial.SetVectorArray(NameIDs._UvScaleArray, _UvScaleArray);
+
     }
 
 
@@ -201,12 +233,16 @@ public class TerrainPainter_Terrain : MonoBehaviour
         renderTexture_convexity_concavitiy_flow_Maps_newCurvature = CreateRenderTexture(heightmapResolution);
         renderTexture_neighbor_terrain_heightMaps = CreateRenderTexture(heightmapResolution);
         renderTexture_neighbor_terrain_slopeMaps = CreateRenderTexture(heightmapResolution);
+        renderTexture_triplanarWeightMap = CreateRenderTexture(heightmapResolution);
 
-        if(terrain.drawInstanced)
+        if (terrain.drawInstanced)
             renderTexture_unity_normalMap = CopyRenderTexture(terrain.normalmapTexture, terrain.normalmapTexture.format) ;
         else
             renderTexture_unity_normalMap = CreateRenderTexture(heightmapResolution) ;
 
+
+        colorMapDiffuse = CreateRenderTexture(alphamapResolution);
+        colorMapNormal = CreateRenderTexture(alphamapResolution);
     }
 
 
@@ -551,6 +587,7 @@ public class TerrainPainter_Terrain : MonoBehaviour
         computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.unity_normalMap, renderTexture_unity_normalMap);
         computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.height_slope_snowWeight_water_Maps, renderTexture_height_slope_snowWeight_water_Maps);
         computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.neighbor_terrain_heightMaps, renderTexture_neighbor_terrain_heightMaps);
+        computeShader.SetTexture(NameIDs.Generate_Slope_Map, NameIDs.triplanarWeightMap, renderTexture_triplanarWeightMap); 
     }
 
 
@@ -920,6 +957,8 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
             if(manager.splats[p_splatMapArrrayIndex].textureMap)
                 computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.textureMap, manager.splats[p_splatMapArrrayIndex].textureMap);
+            else
+                computeShader.SetTexture(NameIDs.Generate_SplatMap, NameIDs.textureMap, CreateRenderTexture(hm_x));
 
             computeShader.Dispatch(NameIDs.Generate_SplatMap, am_x / 8, am_y / 8, 1);
 
@@ -995,9 +1034,45 @@ public class TerrainPainter_Terrain : MonoBehaviour
 
 
 
+    void AssignBuffersAndParametersFor_Generate_ColorMap_Kernel(int p_splatMapArrrayIndex, int p_splatIndex)
+    {
+        computeShader.SetTexture(NameIDs.Generate_ColorMap, NameIDs.splatMapsArray, splatMapsArray[p_splatMapArrrayIndex]);
+        computeShader.SetTexture(NameIDs.Generate_ColorMap, NameIDs.diffuseTexture, manager.splats[p_splatIndex].terrainLayer.diffuseTexture);
+        computeShader.SetTexture(NameIDs.Generate_ColorMap, NameIDs.normalTexture, manager.splats[p_splatIndex].terrainLayer.normalMapTexture);
+        computeShader.SetTexture(NameIDs.Generate_ColorMap, NameIDs.colorMapDiffuse, colorMapDiffuse);
+        computeShader.SetTexture(NameIDs.Generate_ColorMap, NameIDs.colorMapNormal, colorMapNormal);
+        computeShader.SetFloat(NameIDs.uvSize, terrain.terrainData.terrainLayers[p_splatIndex].tileSize.x);
+        computeShader.SetInt(NameIDs.splatCount, manager.splatPaintRulesArray.Length);
+        computeShader.SetInt(NameIDs.splatRuleBufferIndex, p_splatIndex);
+    }
 
 
 
+    public void Generate_ColorMap()
+    {
+        if(splatMapsArray != null)
+        {
+            for (int i = 0; i < manager.splats.Length; i++)
+            {
+               
+                int _splatMapArrayIndex = Mathf.FloorToInt(((float)i) / 4) ;
+                AssignBuffersAndParametersFor_Generate_ColorMap_Kernel(_splatMapArrayIndex, i);
+
+                computeShader.Dispatch(NameIDs.Generate_ColorMap, am_x / 8, am_y / 8, 1);
+                
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+    /*
     public void WriteToTerrainAlphamap()
     {
         for (int i = 0; i < terrain.terrainData.alphamapTextures.Length; i++)
@@ -1007,12 +1082,96 @@ public class TerrainPainter_Terrain : MonoBehaviour
         }
 
         terrain.terrainData.SetBaseMapDirty();
+
+    //    UpdateTerrainMaterialProperty();
+    }
+    */
+
+
+    public void ClearAlphaMap()
+    {
+        float[,,] _alphaMap = new float[am_x, am_y, terrain.terrainData.terrainLayers.Length] ;
+        terrain.terrainData.SetAlphamaps(0,0,_alphaMap);
+
+        terrain.terrainData.SetBaseMapDirty();
+
+        UpdateTerrainMaterialManualPaintedArea();
     }
 
 
 
 
 
+
+
+
+    public void UpdateTerrainMaterialProperty()
+    {
+        if(manager.customTerrainMaterial)
+        {
+            if(texture2DArray_splat == null)
+            {
+                texture2DArray_splat = new Texture2DArray(am_x, am_y, terrain.terrainData.alphamapTextures.Length,  TextureFormat.RGBA32, true) ;
+                texture2DArray_splat.Apply();
+            }
+
+            for(int i=0; i< terrain.terrainData.alphamapTextures.Length; i++)
+            {
+            //    texture2DArray_splat.SetPixels32(terrain.terrainData.alphamapTextures[i].GetPixels32(), i, 0);
+                texture2DArray_splat.SetPixels32(GetPixels32FromRenderTexture(splatMapsArray[i]), i, 0);
+            }
+
+            texture2DArray_splat.Apply();
+
+
+            customTerrainMaterial.SetTexture(NameIDs._TextureArraySplatmap, texture2DArray_splat) ;
+        //    customTerrainMaterial.SetTexture(NameIDs._ColorMapDiffuse, colorMapDiffuse) ;
+        //    customTerrainMaterial.SetTexture(NameIDs._ColorMapNormal, colorMapNormal) ;
+
+            UpdateTerrainTriplanarWeightMap();
+            UpdateTerrainMaterialManualPaintedArea();
+        }
+    }
+
+
+    public void UpdateTerrainTriplanarWeightMap()
+    {
+        if (manager.customTerrainMaterial)
+        {
+            customTerrainMaterial.SetTexture(NameIDs._TriplanarWeightMap, renderTexture_triplanarWeightMap);
+        }
+    }
+
+
+    public void UpdateTerrainMaterialManualPaintedArea()
+    {
+        if(manager.customTerrainMaterial)
+        {
+            if(texture2DArray_manualPainted == null)
+            {
+                texture2DArray_manualPainted = new Texture2DArray(am_x, am_y, terrain.terrainData.alphamapTextures.Length,  TextureFormat.RGBA32, true) ;
+                texture2DArray_manualPainted.Apply();
+            }
+
+            for(int i=0; i< terrain.terrainData.alphamapTextures.Length; i++)
+            {
+                texture2DArray_manualPainted.SetPixels32(terrain.terrainData.alphamapTextures[i].GetPixels32(), i, 0);
+            }
+
+            texture2DArray_manualPainted.Apply();
+
+
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayManualPainted, texture2DArray_manualPainted) ;
+        }
+    }
+
+
+    public void UpdateTerrainMaterialParameters()
+    {
+        customTerrainMaterial.SetFloat(NameIDs._LerpingDistance, manager.lerpingDistance);
+        customTerrainMaterial.SetFloat(NameIDs._HeightBlendingTransition, manager.transitionAmount);
+        customTerrainMaterial.SetFloat(NameIDs._TriplanarCutoffBias, manager.triplanarCutoffBias);
+    }
 
 
 

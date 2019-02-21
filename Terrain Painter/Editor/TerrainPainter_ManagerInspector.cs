@@ -41,6 +41,14 @@ public class TerrainPainter_ManagerInspector : Editor
 
                     managerScript.checkForNewTerrainsOnEnable = EditorGUILayout.Toggle("Check For New Terrains OnEnable", managerScript.checkForNewTerrainsOnEnable);
                     managerScript.computeShader = (ComputeShader)EditorGUILayout.ObjectField("ComputeShader", managerScript.computeShader, typeof(ComputeShader));
+
+                    EditorGUI.BeginChangeCheck();
+                    managerScript.customTerrainMaterial = (Material)EditorGUILayout.ObjectField("Custom Terrain Material", managerScript.customTerrainMaterial, typeof(Material));
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        managerScript.SetUpCustomTerrainMaterail();
+                    }
+
                     EditorGUILayout.Toggle("Initialized", managerScript.isInitialized);
                     EditorGUILayout.Toggle("Is updating", managerScript.isUpdating);
                     EditorGUILayout.Toggle("Has Terrain Heigtmap Changed", managerScript.hasTerrainHeigtmapChanged);
@@ -98,11 +106,60 @@ public class TerrainPainter_ManagerInspector : Editor
 
                         EditorGUILayout.Separator();
 
+                        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
+                        EditorGUILayout.Separator();
+
+
+                        EditorGUI.BeginChangeCheck();
+                        managerScript.lerpingDistance = EditorGUILayout.Slider("Lerping Distance : ", managerScript.lerpingDistance, 1f, 10000f);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            managerScript.UpdateTerrainMaterialParameters(true);
+                        }
+
+
+                        EditorGUI.BeginChangeCheck();
+                        managerScript.transitionAmount = EditorGUILayout.Slider("Transition Amount : ", managerScript.transitionAmount, 0.1f, 0.5f);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            managerScript.UpdateTerrainMaterialParameters(true);
+                        }
+
+
+                        EditorGUI.BeginChangeCheck();
+                        managerScript.triplanarCutoffBias = EditorGUILayout.Slider("Triplanar Cutoff Bias : ", managerScript.triplanarCutoffBias, 0f, 1f);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            managerScript.UpdateTerrainMaterialParameters(true);
+                        }
+
+
+
+
+                        EditorGUILayout.Separator();
+
+                        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+                        EditorGUILayout.Separator();
 
                         if (GUILayout.Button("Update Splatmap"))
                         {
                             managerScript.UpdateSplatmapMap(true);
+                        }
+
+                        EditorGUILayout.Separator();
+
+                        if (GUILayout.Button("Update Manual Painted Area"))
+                        {
+                            managerScript.UpdateTerrainMaterialManualPaintedArea(true);
+                        }
+
+                        EditorGUILayout.Separator();
+
+                        if (GUILayout.Button("Clear Manual Painted Area"))
+                        {
+                            managerScript.ClearTerrainMaterialManualPaintedArea(true);
                         }
 
 
@@ -237,9 +294,7 @@ public class TerrainPainter_ManagerInspector : Editor
                                 managerScript.splats[selected_splat_index].splatType = (SplatType)EditorGUILayout.EnumPopup("Splat Type", managerScript.splats[selected_splat_index].splatType);
                                 managerScript.splats[selected_splat_index].paintMethod = (PaintMethod)EditorGUILayout.EnumPopup("Paint Method", managerScript.splats[selected_splat_index].paintMethod);
                                 EditorGUILayout.Separator();
-
-
-
+                                
 
                                 EditorGUILayout.Separator();
                                 EditorGUILayout.Separator();

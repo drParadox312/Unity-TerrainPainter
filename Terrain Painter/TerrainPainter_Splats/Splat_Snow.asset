@@ -59,7 +59,7 @@ MonoBehaviour:
     slopeMaxEnd: 70
     slopeTransitionFrequency: 10
     slopeTransitionCutoff: 0
-    snowAmount: 0.9
+    snowAmount: 0.8
     snowTransitionSize: 0.1
     snowTransitionFrequency: 15
     snowTransitionCutoff: 0.1
@@ -79,3 +79,4 @@ MonoBehaviour:
   isInverseFlowMapSlopeWeight: 1
   textureMap: {fileID: 2800000, guid: 63dae087e0985ba4f8f408c6725cbf68, type: 3}
   textureMapChannel: 1
+  occlusionMap: {fileID: 2800000, guid: 4267209562e129148bd243dd3507a457, type: 3}

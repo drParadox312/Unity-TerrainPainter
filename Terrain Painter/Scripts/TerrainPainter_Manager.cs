@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TerrainPainter;
 
+
 [ExecuteInEditMode]
 public class TerrainPainter_Manager : MonoBehaviour
 {
@@ -31,6 +32,24 @@ public class TerrainPainter_Manager : MonoBehaviour
     public float maxTerrainHeight = 3000f ;
 
     public int flowMapIteration = 10;
+
+
+    public bool useLerping = true;
+    public float lerpingDistance = 1500f;
+    public bool useHeightBlending = true;
+    public bool useTransition = true;
+    public float transitionAmount = 0.3f;
+    public bool useLerpedTransitionAmount = true;
+    public bool useOcclusion = true;
+    public bool useTriplanar = true;
+    public float triplanarCutoffBias = 0.5f;
+
+
+    public Material customTerrainMaterial ;
+    public Texture2DArray texture2DArray_diffuse ;
+    public Texture2DArray texture2DArray_normal ;
+    public Texture2DArray texture2DArray_height;
+    public Texture2DArray texture2DArray_occlusion;
 
 
     void Awake()
@@ -91,6 +110,13 @@ public class TerrainPainter_Manager : MonoBehaviour
             return;
 
 
+        customTerrainMaterial.SetFloat(NameIDs._LerpingDistance, lerpingDistance);
+        customTerrainMaterial.SetFloat(NameIDs._HeightBlendingTransition, transitionAmount);
+        customTerrainMaterial.SetFloat(NameIDs._TriplanarCutoffBias, triplanarCutoffBias);
+
+        UpdateTerrainMaterialParameters(true);
+
+
         terrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
 
         int _hmR = terrains[0].terrainData.heightmapResolution;
@@ -139,6 +165,11 @@ public class TerrainPainter_Manager : MonoBehaviour
         terrainScripts = new TerrainPainter_Terrain[terrains.Length];
 
 
+
+
+        SetUpTexture2DArrays();
+
+
         for (int i = 0; i < terrains.Length; i++)
         {
             if (terrains[i].gameObject.GetComponent<TerrainPainter_Terrain>() == null)
@@ -158,6 +189,84 @@ public class TerrainPainter_Manager : MonoBehaviour
         heigtmapChangedTerrains = new bool[terrains.Length];
         isUpdating = false;
     }
+
+
+
+
+    public void SetUpCustomTerrainMaterail()
+    {
+        if(splats == null || (splats != null && splats.Length == 0))
+        {
+            Debug.LogError("Assign any splat.") ;
+            customTerrainMaterial = null;
+            return ;
+        }
+
+
+        if(customTerrainMaterial != null)
+        {
+            SetUpTexture2DArrays();
+
+            for (int i = 0; i < terrainScripts.Length; i++)
+            {
+                    terrainScripts[i].SetUpTerrainMaterial();
+            }
+
+            for (int i = 0; i < terrainScripts.Length; i++)
+            {
+                    terrainScripts[i].UpdateTerrainMaterialProperty();
+            }
+
+        }
+        else
+        {
+            for (int i = 0; i < terrainScripts.Length; i++)
+            {
+                    terrainScripts[i].SetUpTerrainMaterial();
+            }
+        }
+    }
+
+
+
+    public void SetUpTexture2DArrays()
+    {
+
+        if(customTerrainMaterial)
+        {
+            int _resolution = splats[0].terrainLayer.diffuseTexture.width ;
+            int _layerCount = splats.Length ;
+
+            texture2DArray_diffuse = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
+            texture2DArray_normal = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
+            texture2DArray_height = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
+            texture2DArray_occlusion = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
+
+            for (int i=0; i<_layerCount; i++)
+            {
+                texture2DArray_diffuse.SetPixels32(splats[i].terrainLayer.diffuseTexture.GetPixels32(), i , 0) ;
+                texture2DArray_normal.SetPixels32(splats[i].terrainLayer.normalMapTexture.GetPixels32(), i , 0) ;
+                texture2DArray_height.SetPixels32(splats[i].terrainLayer.maskMapTexture.GetPixels32(), i, 0);
+                texture2DArray_occlusion.SetPixels32(splats[i].occlusionMap.GetPixels32(), i, 0);
+            }
+
+            texture2DArray_diffuse.Apply();
+            texture2DArray_normal.Apply();
+            texture2DArray_height.Apply();
+            texture2DArray_occlusion.Apply();
+
+
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayDiffuse,texture2DArray_diffuse);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayNormal,texture2DArray_normal);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayHeightmap, texture2DArray_height);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayOcclusion, texture2DArray_occlusion); 
+        }
+    }
+
+
+
+
+
 
 
 
@@ -182,6 +291,8 @@ public class TerrainPainter_Manager : MonoBehaviour
             hasTerrainHeigtmapChanged = false;
             heigtmapChangedTerrains = new bool[terrains.Length];
         }
+
+        isUpdating = false;
     }
     
 
@@ -211,6 +322,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         GenerateFlowMaps(true);
         GenerateCurvatureMaps(true);
         GenerateSplatMaps(true);
+        GenerateColorMap(true);
 
         isUpdating = false;
     }
@@ -230,6 +342,7 @@ public class TerrainPainter_Manager : MonoBehaviour
         GenerateFlowMaps(true);
         GenerateCurvatureMaps(p_atInitialize);
         GenerateSplatMaps(p_atInitialize);
+        GenerateColorMap(p_atInitialize);
 
         isUpdating = false;
     }
@@ -245,6 +358,7 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         GenerateCurvatureMaps(p_atInitialize);
         GenerateSplatMaps(p_atInitialize);
+        GenerateColorMap(p_atInitialize);
 
         isUpdating = false;
     }
@@ -258,10 +372,23 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         UpdateSplatPaintRulesArray();
         GenerateSplatMaps(p_atInitialize);
+        GenerateColorMap(p_atInitialize);
 
         isUpdating = false;
     }
 
+
+    public void UpdateColorMap(bool p_atInitialize = false)
+    {
+        if (isUpdating == true)
+            return;
+
+        isUpdating = true;
+
+        GenerateColorMap(p_atInitialize);
+
+        isUpdating = false;
+    }
 
 
 
@@ -483,15 +610,68 @@ public class TerrainPainter_Manager : MonoBehaviour
                 terrainScripts[i].Normalize_SplatMap();
         }
 
+        /*
         for (int i = 0; i < terrainScripts.Length; i++)
         {
             if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
                 terrainScripts[i].WriteToTerrainAlphamap();
         }
+        */
 
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].UpdateTerrainMaterialProperty();
+        }
 
         SaveManagerParameterModifications();
     }
+
+
+
+    public void GenerateColorMap(bool p_atInitialize = false)
+    {
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].Generate_ColorMap();
+        }
+    }
+
+
+
+    public void UpdateTerrainMaterialManualPaintedArea(bool p_atInitialize = false)
+    {
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].UpdateTerrainMaterialManualPaintedArea();
+        }
+    }
+
+
+    public void ClearTerrainMaterialManualPaintedArea(bool p_atInitialize = false)
+    {
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].ClearAlphaMap();
+        }
+    }
+
+
+
+
+
+    public void UpdateTerrainMaterialParameters(bool p_atInitialize = false)
+    {
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if (p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].UpdateTerrainMaterialParameters();
+        }
+    }
+
 
 
 

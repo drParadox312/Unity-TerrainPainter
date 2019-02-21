@@ -22,6 +22,8 @@
 #pragma kernel Generate_SplatMap
 #pragma kernel Normalize_SplatMap
 
+#pragma kernel Generate_ColorMap
+
 
 
 
@@ -109,6 +111,7 @@ float4 terrainPosition ;
 int heightmapResolution  ;
 int alphaMapResolution  ;
 
+int splatCount ;
 int splatRuleBufferIndex ;
 
 int flowMapIteration ;
@@ -116,6 +119,8 @@ int flowMapIteration ;
 float4 hasNeighborTerrains ;
 float4 cornerNeighborTerrainsHeights ; 
 float4 cornerNeighborTerrainsSlopes ; 
+
+float uvSize ;
 
 
 
@@ -167,11 +172,13 @@ Texture2D<float4> textureMap ;
 
 
 RWTexture2D<float4> splatMapsArray ;
+RWTexture2D<float4> triplanarWeightMap;
 
 
-
-
-
+Texture2D<float4> diffuseTexture ;
+Texture2D<float4> normalTexture ;
+RWTexture2D<float4> colorMapDiffuse ;
+RWTexture2D<float4> colorMapNormal ;
 
 
 
@@ -1191,6 +1198,11 @@ void Generate_Slope_Map (uint3 id : SV_DispatchThreadID)
 {
 	float _slope = CalculateSlope(id) ;
 	height_slope_snowWeight_water_Maps[id.xy] = float4( height_slope_snowWeight_water_Maps[id.xy].x,  _slope, height_slope_snowWeight_water_Maps[id.xy].zw) ;
+
+	float3 blendWeights = pow(abs(CalculateNormal(id)), 4.0);
+	blendWeights = blendWeights / (blendWeights.x + blendWeights.y + blendWeights.z + 0.001);
+
+	triplanarWeightMap[id.xy] = float4(blendWeights, _slope);
 }
 
 
@@ -1513,7 +1525,7 @@ void Generate_SplatMap (uint3 id : SV_DispatchThreadID)
 
 	splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] = _weight + splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] ;
 
-	int _channel_index = (splatRuleBufferIndex % 4);
+	int _channel_index = (int)fmod(splatRuleBufferIndex , 4);
 
 	if			(_channel_index == 0)
 		{splatMapsArray[id.xy] = float4(_weight,    splatMapsArray[id.xy].yzw) ;}
@@ -1543,8 +1555,52 @@ void Normalize_SplatMap (uint3 id : SV_DispatchThreadID)
 
 	if(splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] > 1.0)
 	{
-		splatMapsArray[id.xy] /= splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] ;
+		splatMapsArray[id.xy] /= splat_Map_Total_Weight_Buffer[_splatWeightArrayIndex] ;	
 	}
+}
+
+
+
+
+
+[numthreads(8,8,1)]
+void Generate_ColorMap (uint3 id : SV_DispatchThreadID)
+{
+	float position_X = (((float)id.x) / ((float)alphaMapResolution)) * terrainSize.x ;
+	float position_Y = (((float)id.y) / ((float)alphaMapResolution)) * terrainSize.z ;
+	float uvRepeat_X = position_X / uvSize ;
+	float uvRepeat_Y = position_Y / uvSize ;
+	uint uv_X = uint(frac(uvRepeat_X)) ;
+	uint uv_Y = uint(frac(uvRepeat_Y)) ;
+	uint2 index = uint2(uv_X, uv_Y);
+
+
+	float4 color_diffuse = diffuseTexture[index] ;
+	float4 color_normal = normalTexture[index] ;
+
+
+	float weight = 0;
+
+	int _channel_index = (int)fmod(splatRuleBufferIndex , 4);
+
+	if			(_channel_index == 0)
+		{weight = splatMapsArray[id.xy].x ;}
+
+	else if		(_channel_index == 1)
+		{weight = splatMapsArray[id.xy].y ;}
+
+	else if		(_channel_index == 2)
+		{weight = splatMapsArray[id.xy].z ;}
+
+	else if		(_channel_index == 3)
+		{weight = splatMapsArray[id.xy].w ;}
+		
+
+	
+
+	colorMapDiffuse[id.xy] += color_diffuse * weight ;
+	colorMapNormal[id.xy] += color_normal * weight ;
+
 }
 
 
