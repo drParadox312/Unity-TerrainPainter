@@ -7,8 +7,10 @@ Features :
 - paint rules (height, slope, masks etc.)
 - mask generation (flowmap, convexity, concavity, aspect, texture map)
 - compatible unity's terrain system.
-
-
+- custom terrain shader :
+   > triplanar mapping, 
+   > height blending, 
+   > tiling reduction
 
 
 Using Asset :
@@ -24,10 +26,12 @@ Using Asset :
 5- After that just tweak parameters to see effect.
 
 
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%2010.JPG)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%205.JPG)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%201.JPG)
-![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%209.JPG)
+For adjusting tiling size, use TerrainLayer tileSize and tileOffset paramters.
+
+Textures are from https://freepbr.com. Texture size restricted to 512px for uploading github.
+
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%202.JPG)
+![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot.JPG)
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%203.JPG)
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%2011.JPG)
 
