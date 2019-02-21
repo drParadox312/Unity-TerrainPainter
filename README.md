@@ -28,6 +28,7 @@ Using Asset :
 
 For adjusting tiling size, use TerrainLayer tileSize and tileOffset paramters.
 
+Textures are from https://freepbr.com. Texture size restricted to 512px for uploading github.
 
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot.JPG)
 ![Screenshot](https://github.com/drParadox312/Unity-TerrainPainter/blob/master/Screenshots/screenshot%202.JPG)
