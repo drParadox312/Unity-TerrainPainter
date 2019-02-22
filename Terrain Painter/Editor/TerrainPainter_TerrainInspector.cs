@@ -26,9 +26,9 @@ public class TerrainPainter_TerrainInspector : Editor
                 EditorGUILayout.HelpBox("Keep opened this inpector for heightmap update.", MessageType.Info);
                 EditorGUILayout.ObjectField("Unity Normal map", terrainScript.renderTexture_unity_normalMap, typeof(RenderTexture));
                 EditorGUILayout.ObjectField("Convexity, Concavityi, Flow maps", terrainScript.renderTexture_convexity_concavitiy_flow_Maps, typeof(RenderTexture));
-                EditorGUILayout.ObjectField("Triplanar Weight map", terrainScript.renderTexture_triplanarWeightMap, typeof(RenderTexture));
                 EditorGUILayout.ObjectField("ColorMap Diffuse", terrainScript.colorMapDiffuse, typeof(RenderTexture));
                 EditorGUILayout.ObjectField("ColorMap Normal", terrainScript.colorMapNormal, typeof(RenderTexture));
+                EditorGUILayout.ObjectField("ColorMap MOHS", terrainScript.colorMapMOHS, typeof(RenderTexture));
             }
             else
             {

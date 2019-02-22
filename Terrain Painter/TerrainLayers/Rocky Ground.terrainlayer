@@ -7,14 +7,14 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Rocky Ground
-  m_DiffuseTexture: {fileID: 2800000, guid: 0eb1e3d2a9dacd54996787def7d3e798, type: 3}
-  m_NormalMapTexture: {fileID: 2800000, guid: f4d7d659086f6b94f84678dbe55cf1fb, type: 3}
-  m_MaskMapTexture: {fileID: 2800000, guid: ff78ce661c7895d448d1841a5083d707, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 372fc23d7b2e1e14ba58e6c21b56f642, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: 4fc4aac46bf717f4d921c9ecb20ed8ca, type: 3}
+  m_MaskMapTexture: {fileID: 2800000, guid: 328df65f0d5155e4890992ae50b4ac1f, type: 3}
   m_TileSize: {x: 150, y: 0}
   m_TileOffset: {x: 4, y: 1}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
-  m_Metallic: 0.032
-  m_Smoothness: 0.076
+  m_Metallic: 0
+  m_Smoothness: 0
   m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}

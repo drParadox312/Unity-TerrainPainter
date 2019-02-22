@@ -24,6 +24,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ColorMapMOHS:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ColorMapNormal:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -72,11 +76,19 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _TextureArrayEmission:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _TextureArrayHeight:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TextureArrayHeightmap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureArrayMOHS:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -105,17 +117,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _ColorMapCutoff: 0.5
     - _ColorMapDistance: 0.8
-    - _HeightBlendingTransition: 0.2
+    - _HeightBlendingTransition: 0.3
     - _HeightBlendingTreshold: 1
     - _HeightmapBlendingDistance: 0.8
     - _HeightmapCutoff: 0.1
     - _HeightmapTransition: 0.2
     - _LerpRatioTreshold: 0.25
-    - _LerpingDistance: 1000
+    - _LerpingDistance: 1500
     - _LerpingPower: 1
     - _NormalSelection: 1
     - _SplatCount: 5
+    - _TriplanarCutoff: 0.7
     - _TriplanarCutoffBias: 0.5
     - _TriplanarPower: 10
     - _TriplanarTreshold: 0.5

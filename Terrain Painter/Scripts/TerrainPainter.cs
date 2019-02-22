@@ -151,13 +151,14 @@ namespace TerrainPainter
         public static int convexity_concavitiy_flow_Maps_newCurvature; 
         public static int splatMapTotalWeight_Maps;
         public static int splatMapsArray;
-        public static int triplanarWeightMap;
         public static int splatIndexMap;
         public static int textureMap;
         public static int diffuseTexture;
         public static int normalTexture;
+        public static int mohsTexture;
         public static int colorMapDiffuse;
         public static int colorMapNormal;
+        public static int colorMapMOHS;
 
 
 
@@ -186,26 +187,25 @@ namespace TerrainPainter
         // custom terrain shader
         public static int _SplatCount;
         public static int _UvScaleArray;
-        public static int _TriplanarWeightMap;
         public static int _ManualPaintedSplatMap0;
         public static int _ManualPaintedSplatMap1;
         public static int _ManualPaintedSplatMap2;
         public static int _ManualPaintedSplatMap3;
-    //    public static int _TextureArrayManualPainted;
         public static int _TextureArraySplatmap;
         public static int _TextureArrayDiffuse;
         public static int _TextureArrayNormal;
-        public static int _TextureArrayHeightmap;
-        public static int _TextureArrayOcclusion;
+        public static int _TextureArrayMOHS;
         public static int _LerpingDistance;
         public static int _HeightBlendingTransition;
         public static int _TriplanarCutoffBias;
+        public static int _TriplanarPower;
         public static int _ColorMapDistance;
 
 
         // custom terrain shaderBase
         public static int _ColorMapDiffuse;
         public static int _ColorMapNormal;
+        public static int _ColorMapMOHS;
 
 
 
@@ -261,14 +261,14 @@ namespace TerrainPainter
             convexity_concavitiy_flow_Maps_newCurvature = Shader.PropertyToID("convexity_concavitiy_flow_Maps_newCurvature"); 
             splatMapTotalWeight_Maps = Shader.PropertyToID("splatMapTotalWeight_Maps");
             splatMapsArray = Shader.PropertyToID("splatMapsArray");
-            triplanarWeightMap = Shader.PropertyToID("triplanarWeightMap");
             splatIndexMap = Shader.PropertyToID("splatIndexMap");
             textureMap = Shader.PropertyToID("textureMap");
             diffuseTexture = Shader.PropertyToID("diffuseTexture");
             normalTexture = Shader.PropertyToID("normalTexture");
+            mohsTexture = Shader.PropertyToID("mohsTexture");
             colorMapDiffuse = Shader.PropertyToID("colorMapDiffuse");
             colorMapNormal = Shader.PropertyToID("colorMapNormal");
-
+            colorMapMOHS = Shader.PropertyToID("colorMapMOHS");
 
 
             // buffers
@@ -298,26 +298,24 @@ namespace TerrainPainter
             // custom terrain shader
             _SplatCount = Shader.PropertyToID("_SplatCount");
             _UvScaleArray = Shader.PropertyToID("_UvScaleArray");
-            _TriplanarWeightMap = Shader.PropertyToID("_TriplanarWeightMap");
             _ManualPaintedSplatMap0 = Shader.PropertyToID("_ManualPaintedSplatMap0");
             _ManualPaintedSplatMap1 = Shader.PropertyToID("_ManualPaintedSplatMap1");
             _ManualPaintedSplatMap2 = Shader.PropertyToID("_ManualPaintedSplatMap2");
             _ManualPaintedSplatMap3 = Shader.PropertyToID("_ManualPaintedSplatMap3");
-        //    _TextureArrayManualPainted = Shader.PropertyToID("_TextureArrayManualPainted");
             _TextureArraySplatmap = Shader.PropertyToID("_TextureArraySplatmap");
             _TextureArrayDiffuse = Shader.PropertyToID("_TextureArrayDiffuse");
             _TextureArrayNormal = Shader.PropertyToID("_TextureArrayNormal");
-            _TextureArrayHeightmap = Shader.PropertyToID("_TextureArrayHeightmap");
-            _TextureArrayOcclusion = Shader.PropertyToID("_TextureArrayOcclusion");
+            _TextureArrayMOHS = Shader.PropertyToID("_TextureArrayMOHS");
             _LerpingDistance = Shader.PropertyToID("_LerpingDistance");
             _HeightBlendingTransition = Shader.PropertyToID("_HeightBlendingTransition");
             _TriplanarCutoffBias = Shader.PropertyToID("_TriplanarCutoffBias");
+            _TriplanarPower = Shader.PropertyToID("_TriplanarPower");
             _ColorMapDistance = Shader.PropertyToID("_ColorMapDistance");
 
 
             _ColorMapDiffuse = Shader.PropertyToID("_ColorMapDiffuse");
             _ColorMapNormal = Shader.PropertyToID("_ColorMapNormal");
-
+            _ColorMapMOHS = Shader.PropertyToID("_ColorMapMOHS");
         }
     }
 }

@@ -25,5 +25,4 @@ public class TerrainPainter_Splat : ScriptableObject
     public bool isInverseFlowMapSlopeWeight;
     public Texture textureMap ;
     public TerrainPainter.TextureMapChannel textureMapChannel ;
-    public Texture2D occlusionMap;
 }

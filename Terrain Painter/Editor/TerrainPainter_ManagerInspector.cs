@@ -157,6 +157,13 @@ public class TerrainPainter_ManagerInspector : Editor
 
                         EditorGUILayout.Separator();
 
+                        if (GUILayout.Button("Write To Terrain Alphamap"))
+                        {
+                            managerScript.WriteToTerrainAlphamap(true);
+                        }
+
+                        EditorGUILayout.Separator();
+
                         if (GUILayout.Button("Clear Manual Painted Area"))
                         {
                             managerScript.ClearTerrainMaterialManualPaintedArea(true);

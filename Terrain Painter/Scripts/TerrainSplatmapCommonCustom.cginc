@@ -88,7 +88,7 @@ void SplatmapVert(inout appdata_full v, out Input data)
 
 
 #ifndef TERRAIN_SURFACE_OUTPUT
-    #define TERRAIN_SURFACE_OUTPUT SurfaceOutput
+    #define TERRAIN_SURFACE_OUTPUT SurfaceOutputStandard
 #endif
 
 void SplatmapFinalColor(Input IN, TERRAIN_SURFACE_OUTPUT o, inout fixed4 color)
@@ -115,3 +115,5 @@ void SplatmapFinalGBuffer(Input IN, TERRAIN_SURFACE_OUTPUT o, inout half4 outGBu
 #endif // TERRAIN_BASE_PASS
 
 #endif // TERRAIN_SPLATMAP_COMMON_CGINC_INCLUDED
+
+

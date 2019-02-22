@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2805e08a99e47524aa279caf6481c4d9, type: 3}
+  m_Name: Splat_Cliif
+  m_EditorClassIdentifier: 
+  name: Cliff
+  terrainLayer: {fileID: 8574412962073106934, guid: 6bb0ad2ce1440c246a899093f0414b71,
+    type: 2}
+  paintRules:
+    splatType: 0
+    paintMethod: 0
+    useFlowMap: 0
+    useConvexityMap: 0
+    useConcavityMap: 0
+    useAspectMap: 0
+    useTextureMap: 0
+    flowMapWeight: 0.75
+    flowMapTransition: 0
+    flowMapScale: 1000
+    flowMapHeightWeight: 0
+    isInverseFlowMapHeightWeight: 0
+    flowMapSlopeWeight: 0
+    isInverseFlowMapSlopeWeight: 0
+    flowMapEffect: 0
+    convexityMapWeight: 0.01
+    convexityMapTransition: 0
+    convexityMapScale: 0
+    convexityMapEffect: 0
+    concavityMapWeight: 0
+    concavityMapTransition: 0
+    concavityMapScale: 0
+    concavityMapEffect: 0
+    aspectMapWeight: 0
+    aspectMapPower: 0
+    aspectMapDirection: 0
+    aspectMapEffect: 0
+    textureMapWeight: 0
+    textureMapChannel: 0
+    textureMapResolution: 0
+    textureMapEffect: 0
+    heightMinStart: 0
+    heightMinEnd: 0
+    heightMaxStart: 1500
+    heightMaxEnd: 1500
+    heightTransitionFrequency: 0
+    heightTransitionCutoff: 0
+    slopeMinStart: 25
+    slopeMinEnd: 45
+    slopeMaxStart: 90
+    slopeMaxEnd: 90
+    slopeTransitionFrequency: 0
+    slopeTransitionCutoff: 0
+    snowAmount: 0
+    snowTransitionSize: 0
+    snowTransitionFrequency: 0
+    snowTransitionCutoff: 0
+  splatType: 0
+  paintMethod: 0
+  flowMapEffect: 0
+  convexityMapEffect: 0
+  concavityMapEffect: 0
+  aspectMapEffect: 0
+  textureMapEffect: 0
+  useFlowMapMask: 0
+  useConvexityMapMask: 0
+  useConcavityMapMask: 0
+  useAspectMap: 0
+  useTextureMap: 0
+  isInverseFlowMapHeightWeight: 0
+  isInverseFlowMapSlopeWeight: 0
+  textureMap: {fileID: 0}
+  textureMapChannel: 0

@@ -172,14 +172,14 @@ Texture2D<float4> textureMap ;
 
 
 RWTexture2D<float4> splatMapsArray ;
-RWTexture2D<float4> triplanarWeightMap;
 
 
 Texture2D<float4> diffuseTexture ;
 Texture2D<float4> normalTexture ;
+Texture2D<float4> mohsTexture ;
 RWTexture2D<float4> colorMapDiffuse ;
 RWTexture2D<float4> colorMapNormal ;
-
+RWTexture2D<float4> colorMapMOHS ;
 
 
 
@@ -1198,11 +1198,6 @@ void Generate_Slope_Map (uint3 id : SV_DispatchThreadID)
 {
 	float _slope = CalculateSlope(id) ;
 	height_slope_snowWeight_water_Maps[id.xy] = float4( height_slope_snowWeight_water_Maps[id.xy].x,  _slope, height_slope_snowWeight_water_Maps[id.xy].zw) ;
-
-	float3 blendWeights = pow(abs(CalculateNormal(id)), 4.0);
-	blendWeights = blendWeights / (blendWeights.x + blendWeights.y + blendWeights.z + 0.001);
-
-	triplanarWeightMap[id.xy] = float4(blendWeights, _slope);
 }
 
 
@@ -1577,7 +1572,7 @@ void Generate_ColorMap (uint3 id : SV_DispatchThreadID)
 
 	float4 color_diffuse = diffuseTexture[index] ;
 	float4 color_normal = normalTexture[index] ;
-
+	float4 color_MOHS = mohsTexture[index] ;
 
 	float weight = 0;
 
@@ -1600,7 +1595,7 @@ void Generate_ColorMap (uint3 id : SV_DispatchThreadID)
 
 	colorMapDiffuse[id.xy] += color_diffuse * weight ;
 	colorMapNormal[id.xy] += color_normal * weight ;
-
+	colorMapMOHS[id.xy] += color_MOHS * weight ;
 }
 
 

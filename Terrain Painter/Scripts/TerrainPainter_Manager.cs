@@ -49,7 +49,6 @@ public class TerrainPainter_Manager : MonoBehaviour
     public Texture2DArray texture2DArray_diffuse;
     public Texture2DArray texture2DArray_normal;
     public Texture2DArray texture2DArray_height;
-    public Texture2DArray texture2DArray_occlusion;
 
 
     void Awake()
@@ -110,13 +109,6 @@ public class TerrainPainter_Manager : MonoBehaviour
             return;
 
 
-        customTerrainMaterial.SetFloat(NameIDs._LerpingDistance, lerpingDistance);
-        customTerrainMaterial.SetFloat(NameIDs._HeightBlendingTransition, transitionAmount);
-        customTerrainMaterial.SetFloat(NameIDs._TriplanarCutoffBias, triplanarCutoffBias);
-
-        UpdateTerrainMaterialParameters(true);
-
-
         terrains = (Terrain[])FindObjectsOfType(typeof(Terrain));
 
         int _hmR = terrains[0].terrainData.heightmapResolution;
@@ -169,7 +161,6 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         SetUpTexture2DArrays();
 
-
         for (int i = 0; i < terrains.Length; i++)
         {
             if (terrains[i].gameObject.GetComponent<TerrainPainter_Terrain>() == null)
@@ -181,6 +172,19 @@ public class TerrainPainter_Manager : MonoBehaviour
             terrainScripts[i].terrainIndex = i;
             terrainScripts[i].SetUpProperties();
         }
+
+
+
+        if(customTerrainMaterial)
+        {
+            customTerrainMaterial.SetFloat(NameIDs._LerpingDistance, lerpingDistance);
+            customTerrainMaterial.SetFloat(NameIDs._HeightBlendingTransition, transitionAmount);
+            customTerrainMaterial.SetFloat(NameIDs._TriplanarCutoffBias, triplanarCutoffBias);
+
+            UpdateTerrainMaterialParameters(true);
+        }
+
+
 
         UpdateTerrainsAtInitialize();
 
@@ -240,26 +244,22 @@ public class TerrainPainter_Manager : MonoBehaviour
             texture2DArray_diffuse = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
             texture2DArray_normal = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
             texture2DArray_height = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
-            texture2DArray_occlusion = new Texture2DArray(_resolution, _resolution, _layerCount, TextureFormat.RGBA32, true);
 
             for (int i = 0; i < _layerCount; i++)
             {
                 texture2DArray_diffuse.SetPixels32(splats[i].terrainLayer.diffuseTexture.GetPixels32(), i, 0);
                 texture2DArray_normal.SetPixels32(splats[i].terrainLayer.normalMapTexture.GetPixels32(), i, 0);
                 texture2DArray_height.SetPixels32(splats[i].terrainLayer.maskMapTexture.GetPixels32(), i, 0);
-                texture2DArray_occlusion.SetPixels32(splats[i].occlusionMap.GetPixels32(), i, 0);
             }
 
             texture2DArray_diffuse.Apply();
             texture2DArray_normal.Apply();
             texture2DArray_height.Apply();
-            texture2DArray_occlusion.Apply();
 
 
             customTerrainMaterial.SetTexture(NameIDs._TextureArrayDiffuse, texture2DArray_diffuse);
             customTerrainMaterial.SetTexture(NameIDs._TextureArrayNormal, texture2DArray_normal);
-            customTerrainMaterial.SetTexture(NameIDs._TextureArrayHeightmap, texture2DArray_height);
-            customTerrainMaterial.SetTexture(NameIDs._TextureArrayOcclusion, texture2DArray_occlusion);
+            customTerrainMaterial.SetTexture(NameIDs._TextureArrayMOHS, texture2DArray_height);
         }
     }
 
@@ -613,14 +613,6 @@ public class TerrainPainter_Manager : MonoBehaviour
                 terrainScripts[i].Normalize_SplatMap();
         }
 
-        /*
-        for (int i = 0; i < terrainScripts.Length; i++)
-        {
-            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
-                terrainScripts[i].WriteToTerrainAlphamap();
-        }
-        */
-
         for (int i = 0; i < terrainScripts.Length; i++)
         {
             if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
@@ -663,9 +655,6 @@ public class TerrainPainter_Manager : MonoBehaviour
     }
 
 
-
-
-
     public void UpdateTerrainMaterialParameters(bool p_atInitialize = false)
     {
         for (int i = 0; i < terrainScripts.Length; i++)
@@ -674,6 +663,17 @@ public class TerrainPainter_Manager : MonoBehaviour
                 terrainScripts[i].UpdateTerrainMaterialParameters();
         }
     }
+
+
+    public void WriteToTerrainAlphamap(bool p_atInitialize = false)
+    {
+        for (int i = 0; i < terrainScripts.Length; i++)
+        {
+            if(p_atInitialize || (autoUpdateFlowMap || (!autoUpdateFlowMap && heigtmapChangedTerrains[i])))
+                terrainScripts[i].WriteToTerrainAlphamap();
+        }
+    }
+
 
 
 
@@ -711,8 +711,12 @@ public class TerrainPainter_Manager : MonoBehaviour
 
         splats = _newSplats;
    
-
         UpdateSplats(true);
+
+        if(splats.Length == 1)
+        {
+            ClearTerrainMaterialManualPaintedArea(true);
+        }
     }
 
     public void RemoveSplat(int p_index)
